@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Presynaptic Vesicle Release Cycle Activities</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #304a8a;
+      color: white;
+      padding: 16px 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    header p {
+      margin: 4px 0 0;
+      font-size: 0.95rem;
+      max-width: 900px;
+    }
+
+    main {
+      padding: 20px 24px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      padding: 16px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+    }
+
+    .panel h3 {
+      margin-top: 0;
+      font-size: 1.05rem;
+    }
+
+    .svg-wrapper {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hint-text {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    /* Page switching */
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+
+    /* Part 1 layout */
+    #activity-area {
+      display: grid;
+      grid-template-columns: minmax(240px, 1.1fr) minmax(360px, 1.4fr) minmax(260px, 1.1fr);
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 1000px) {
+      #activity-area {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-container {
+      min-height: 260px;
+      border: 1px dashed #bbb;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fafbff;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .step-card {
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid #d0d7f2;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .step-card span.step-label {
+      color: #304a8a;
+      font-weight: bold;
+    }
+
+    .step-card.dragging {
+      opacity: 0.6;
+    }
+
+    /* Circular drop zone (bigger) */
+    .circle-container {
+      position: relative;
+      width: 430px;
+      height: 430px;
+      margin: 0 auto;
+    }
+
+    .circle-bg {
+      position: absolute;
+      inset: 15px;
+      border-radius: 50%;
+      border: 2px dashed #ccc;
+    }
+
+    .slot-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.8rem;
+      color: #555;
+      text-align: center;
+      max-width: 80%;
+    }
+
+    .drop-slot {
+      position: absolute;
+      width: 130px;
+      min-height: 64px;
+      border-radius: 8px;
+      border: 1px dashed #aaa;
+      padding: 4px;
+      box-sizing: border-box;
+      background: #f7f8fe;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+    }
+
+    .drop-slot.hovered {
+      background: #e6ebff;
+      border-color: #304a8a;
+    }
+
+    .drop-slot .slot-index {
+      font-weight: bold;
+      font-size: 0.8rem;
+      margin-right: 4px;
+      color: #304a8a;
+    }
+
+    .drop-slot-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .drop-slot.empty .drop-hint {
+      font-size: 0.7rem;
+      color: #888;
+    }
+
+    /* Slot positions (7 around circle) */
+    .slot-0 { top: 2%; left: 50%; transform: translate(-50%, 0); }
+    .slot-1 { top: 18%; right: 4%; }
+    .slot-2 { top: 50%; right: -2%; transform: translateY(-50%); }
+    .slot-3 { bottom: 4%; right: 18%; }
+    .slot-4 { bottom: 4%; left: 18%; }
+    .slot-5 { top: 50%; left: -2%; transform: translateY(-50%); }
+    .slot-6 { top: 18%; left: 4%; }
+
+    /* Feedback & buttons */
+    .controls {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      border-radius: 6px;
+      border: none;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      background: #304a8a;
+      color: white;
+    }
+
+    button.secondary {
+      background: #8a3044;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    #feedback,
+    #protein-feedback {
+      font-size: 0.9rem;
+    }
+
+    .correct-slot {
+      border-color: #3da560 !important;
+      background: #e5f6ea !important;
+    }
+
+    .incorrect-slot {
+      border-color: #c62828 !important;
+      background: #fdecea !important;
+    }
+
+    #details-panel {
+      font-size: 0.9rem;
+    }
+
+    #details-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    #details-description {
+      margin-bottom: 6px;
+    }
+
+    #details-proteins span {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid #304a8a33;
+      margin: 2px 4px 2px 0;
+      font-size: 0.8rem;
+      background: #f0f3ff;
+    }
+
+    .highlight-details {
+      outline: 2px solid #304a8a;
+      outline-offset: 2px;
+      transition: outline 0.2s ease-out;
+    }
+
+    /* Part 2: protein matching layout */
+    #protein-activity {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(360px, 1.4fr);
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 900px) {
+      #protein-activity {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .protein-card {
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid #cfd8ff;
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+
+    .protein-card.dragging {
+      opacity: 0.6;
+    }
+
+    .protein-drop-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+
+    .protein-step-label {
+      min-width: 140px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #304a8a;
+    }
+
+    .protein-drop {
+      flex: 1;
+      min-height: 40px;
+      border-radius: 6px;
+      border: 1px dashed #999;
+      padding: 4px;
+      background: #f7f8fe;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .protein-drop.hovered {
+      background: #e6ebff;
+      border-color: #304a8a;
+    }
+
+    .protein-drop.empty .protein-drop-hint {
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    .protein-card.protein-correct {
+      border-color: #2e7d32;
+      background: #e5f6ea;
+    }
+
+    .protein-card.protein-incorrect {
+      border-color: #c62828;
+      background: #fdecea;
+    }
+
+    #next-btn {
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Presynaptic Vesicle Release Cycle – Interactive Activities</h1>
+  <p>
+    Activity 1: Order the vesicle cycle steps and explore details.  
+    Activity 2: Match key proteins to the vesicle cycle steps.  
+    Activity 3 (Quiz) unlocks when Activity 2 is 100% correct.
+  </p>
+</header>
+
+<main>
+  <!-- PAGE 1: Schematic + Step Ordering -->
+  <div id="page1" class="page active">
+    <section class="panel">
+      <h2>Presynaptic Terminal Schematic</h2>
+      <div class="svg-wrapper">
+        <!-- Enhanced SVG of a presynaptic terminal with more labels/arrows -->
+        <svg viewBox="0 0 280 200" width="100%" aria-label="Diagram of a presynaptic terminal">
+          <!-- Terminal outline -->
+          <path d="M30 25 Q140 0 250 25 L250 145 Q140 190 30 145 Z"
+                fill="#f0f3ff" stroke="#304a8a" stroke-width="2"/>
+
+          <!-- Active zone membrane -->
+          <line x1="40" y1="145" x2="240" y2="145" stroke="#304a8a" stroke-width="3"/>
+
+          <!-- Reserve pool vesicles -->
+          <circle cx="80" cy="75" r="10" fill="#ffcc80" stroke="#f57c00"/>
+          <circle cx="110" cy="60" r="10" fill="#ffcc80" stroke="#f57c00"/>
+          <circle cx="140" cy="75" r="10" fill="#ffcc80" stroke="#f57c00"/>
+          <circle cx="170" cy="60" r="10" fill="#ffcc80" stroke="#f57c00"/>
+
+          <!-- Reserve pool label and boundary -->
+          <rect x="60" y="45" width="140" height="60" fill="none" stroke="#9e9e9e" stroke-dasharray="4,3"/>
+          <text x="130" y="50" text-anchor="middle" font-size="8" fill="#616161">reserve pool</text>
+
+          <!-- Vesicle moving toward active zone (arrow) -->
+          <circle cx="205" cy="90" r="10" fill="#ffcc80" stroke="#f57c00"/>
+          <line x1="185" y1="85" x2="200" y2="93" stroke="#616161" stroke-width="1.3"/>
+          <polygon points="200,93 195,88 203,88" fill="#616161"/>
+
+          <!-- Docked/primed vesicle at active zone -->
+          <circle cx="190" cy="135" r="10" fill="#ffcc80" stroke="#f57c00"/>
+          <text x="190" y="130" text-anchor="middle" font-size="6" fill="#333">primed</text>
+
+          <!-- P/Q-type Ca2+ channels near active zone -->
+          <rect x="80" y="135" width="8" height="16" fill="#90caf9" stroke="#1565c0"/>
+          <rect x="100" y="135" width="8" height="16" fill="#90caf9" stroke="#1565c0"/>
+          <rect x="120" y="135" width="8" height="16" fill="#90caf9" stroke="#1565c0"/>
+          <text x="100" y="130" text-anchor="middle" font-size="7" fill="#1a237e">P/Q Ca²⁺</text>
+
+          <!-- Arrow for Ca2+ entry -->
+          <line x1="100" y1="120" x2="100" y2="135" stroke="#1565c0" stroke-width="1.3"/>
+          <polygon points="100,120 96,125 104,125" fill="#1565c0"/>
+
+          <!-- Ca2+ label -->
+          <text x="90" y="118" text-anchor="end" font-size="7" fill="#1565c0">Ca²⁺ influx</text>
+
+          <!-- Clathrin-coated pit (endocytosis) -->
+          <circle cx="60" cy="140" r="11" fill="none" stroke="#6a1b9a" stroke-width="2" stroke-dasharray="3,2"/>
+          <text x="60" y="135" text-anchor="middle" font-size="6" fill="#6a1b9a">clathrin</text>
+
+          <!-- Recycling arrow from membrane back to reserve pool -->
+          <path d="M60 130 C40 110 40 80 60 65"
+                fill="none" stroke="#6a1b9a" stroke-width="1.3" stroke-dasharray="3,2"/>
+          <polygon points="60,65 56,71 64,71" fill="#6a1b9a"/>
+          <text x="42" y="100" text-anchor="middle" font-size="7" fill="#6a1b9a" transform="rotate(-40 42 100)">recycling</text>
+
+          <!-- Active zone label -->
+          <text x="140" y="158" text-anchor="middle" font-size="8" fill="#304a8a">active zone</text>
+
+          <!-- Terminal label -->
+          <text x="140" y="25" text-anchor="middle" font-size="10" fill="#304a8a">presynaptic terminal</text>
+        </svg>
+        <p class="hint-text">
+          Follow a vesicle from the reserve pool → docking/priming at the active zone → Ca²⁺-triggered release → clathrin-mediated recycling back to the pool.
+        </p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Activity 1: Order the Vesicle Cycle</h2>
+      <div id="activity-area">
+        <!-- Left: pool of draggable step cards -->
+        <div>
+          <h3>Step Cards</h3>
+          <p class="hint-text">
+            Drag these steps onto the numbered positions around the circle. Click a step for more details.
+          </p>
+          <div id="card-pool" class="card-container">
+            <!-- Cards injected by JS -->
+          </div>
+        </div>
+
+        <!-- Middle: circular drop area -->
+        <div>
+          <h3>Vesicle Cycle (Circular Order)</h3>
+          <div class="circle-container" aria-label="Circle with 7 positions for vesicle cycle steps">
+            <div class="circle-bg"></div>
+            <div class="slot-label">
+              Place Step 1 at the top, then follow the vesicle through its cycle
+              clockwise (1 → 7). The cycle repeats continuously in an active synapse.
+            </div>
+
+            <!-- Drop slots -->
+            <div class="drop-slot slot-0 empty" data-slot-index="0">
+              <div class="slot-index">1</div>
+              <div class="drop-slot-inner">
+                <div class="drop-hint">Drop Step 1 here</div>
+              </div>
+            </div>
+            <div class="drop-slot slot-1 empty" data-slot-index="1">
+              <div class="slot-index">2</div>
+              <div class="drop-slot-inner">
+                <div class="drop-hint">Drop Step 2 here</div>
+              </div>
+            </div>
+            <div class="drop-slot slot-2 empty" data-slot-index="2">
+              <div class="slot-index">3</div>
+              <div class="drop-slot-inner">
+                <div class="drop-hint">Drop Step 3 here</div>
+              </div>
+            </div>
+            <div class="drop-slot slot-3 empty" data-slot-index="3">
+              <div class="slot-index">4</div>
+              <div class="drop-slot-inner">
+                <div class="drop-hint">Drop Step 4 here</div>
+              </div>
+            </div>
+            <div class="drop-slot slot-4 empty" data-slot-index="4">
+              <div class="slot-index">5</div>
+              <div class="drop-slot-inner">
+                <div class="drop-hint">Drop Step 5 here</div>
+              </div>
+            </div>
+            <div class="drop-slot slot-5 empty" data-slot-index="5">
+              <div class="slot-index">6</div>
+              <div class="drop-slot-inner">
+                <div class="drop-hint">Drop Step 6 here</div>
+              </div>
+            </div>
+            <div class="drop-slot slot-6 empty" data-slot-index="6">
+              <div class="slot-index">7</div>
+              <div class="drop-slot-inner">
+                <div class="drop-hint">Drop Step 7 here</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="check-btn">Check Order</button>
+            <button id="reset-btn" class="secondary">Reset / Shuffle</button>
+            <span id="feedback"></span>
+          </div>
+        </div>
+
+        <!-- Right: details on selected step -->
+        <div id="details-panel">
+          <h3>Step Details & Key Proteins</h3>
+          <p class="hint-text">
+            Click any step card (in the pool or on the circle) to see its description and key proteins.
+          </p>
+          <div id="details-title">No step selected</div>
+          <div id="details-description">
+            Select a step to see how it fits into the presynaptic vesicle cycle.
+          </div>
+          <div><strong>Key proteins at this step:</strong></div>
+          <div id="details-proteins">
+            <!-- Protein tags injected by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="next-btn">Go to Activity 2 (Protein Matching)</button>
+        <span class="hint-text" id="next-hint">
+          You must get all 7 steps correct to unlock Activity 2.
+        </span>
+      </div>
+    </section>
+  </div>
+
+  <!-- PAGE 2: Protein Matching -->
+  <div id="page2" class="page">
+    <section class="panel">
+      <h2>Activity 2: Match Key Proteins to Vesicle Cycle Steps</h2>
+      <p class="hint-text">
+        Drag each protein onto the step where it primarily acts. Some steps will have multiple proteins (e.g., SNAREs).
+      </p>
+      <div id="protein-activity">
+        <!-- Protein pool -->
+        <div>
+          <h3>Protein Cards</h3>
+          <div id="protein-pool" class="card-container">
+            <!-- Protein cards injected by JS -->
+          </div>
+        </div>
+
+        <!-- Step drop rows -->
+        <div>
+          <h3>Steps (Drop Proteins Here)</h3>
+          <div id="protein-step-list">
+            <!-- Rows injected by JS -->
+          </div>
+          <div class="controls">
+            <button id="protein-check-btn">Check Protein Matches</button>
+            <button id="protein-reset-btn" class="secondary">Reset Proteins</button>
+            <span id="protein-feedback"></span>
+            <!-- Quiz button unlocked when all proteins correct -->
+            <button id="quiz-btn" style="display:none; margin-left:8px;">
+              Go to Quiz (Activity 3)
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+  // --- DATA STRUCTURES ---
+
+  // Canonical steps in correct circular order
+  const steps = [
+    {
+      id: "step1",
+      title: "Vesicle filling in the reserve pool",
+      shortLabel: "Vesicle filling",
+      description:
+        "Newly formed synaptic vesicles are filled with neurotransmitter while they reside in the reserve pool away from the active zone. A proton pump (V-ATPase) builds an H⁺ gradient across the vesicle membrane, and vesicular transporters use this gradient to concentrate neurotransmitter into the vesicle.",
+      proteins: ["Vesicular transporters"],
+      keyPoint:
+        "Vesicles are loaded with neurotransmitter by vesicular transporters before they dock at the active zone."
+    },
+    {
+      id: "step2",
+      title: "Docking at the active zone",
+      shortLabel: "Docking",
+      description:
+        "Filled vesicles move from the reserve pool toward the presynaptic active zone and dock near the plasma membrane. They become closely apposed to the release sites but are not yet fully fusion-ready.",
+      proteins: ["syntaxin", "SNAP25", "synaptobrevin"],
+      keyPoint:
+        "Docked vesicles sit near P/Q-type Ca²⁺ channels, ready for rapid release."
+    },
+    {
+      id: "step3",
+      title: "Priming and SNARE complex assembly",
+      shortLabel: "Priming (SNAREs)",
+      description:
+        "Docked vesicles are 'primed' for rapid fusion. This involves the assembly of the SNARE complex: synaptobrevin (on the vesicle) pairs with syntaxin and SNAP25 (on the presynaptic membrane). Priming stores energy in the SNARE complex so that the vesicle can fuse quickly when Ca²⁺ rises.",
+      proteins: ["syntaxin", "SNAP25", "synaptobrevin"],
+      keyPoint:
+        "Priming converts docked vesicles into a 'readily releasable pool' tightly associated with SNARE proteins."
+    },
+    {
+      id: "step4",
+      title: "Action potential and Ca²⁺ influx",
+      shortLabel: "Ca²⁺ entry",
+      description:
+        "An action potential invades the presynaptic terminal and depolarizes the membrane. This depolarization opens P/Q-type voltage-gated Ca²⁺ channels clustered near the active zone, allowing Ca²⁺ to flow into the terminal.",
+      proteins: ["P/Q-type Ca²⁺ channels"],
+      keyPoint:
+        "P/Q-type Ca²⁺ channels convert the electrical signal (the action potential) into a local chemical Ca²⁺ signal."
+    },
+    {
+      id: "step5",
+      title: "Ca²⁺-triggered fusion and exocytosis",
+      shortLabel: "Fusion & release",
+      description:
+        "The local increase in Ca²⁺ is sensed by synaptotagmin on the vesicle membrane. Ca²⁺-bound synaptotagmin interacts with the SNARE complex and the membrane to trigger rapid fusion of the vesicle with the presynaptic membrane. Neurotransmitter is released into the synaptic cleft by exocytosis.",
+      proteins: ["synaptotagmin", "syntaxin", "SNAP25", "synaptobrevin"],
+      keyPoint:
+        "Synaptotagmin acts as the Ca²⁺ sensor that triggers the SNARE complex to drive membrane fusion."
+    },
+    {
+      id: "step6",
+      title: "Endocytosis of vesicle membrane",
+      shortLabel: "Endocytosis",
+      description:
+        "After fusion, vesicle membrane proteins and lipids remain in the presynaptic plasma membrane. Clathrin-mediated endocytosis retrieves patches of membrane to form new vesicle buds. Adaptor proteins recruit clathrin, which forms a coated pit that is pinched off to make a clathrin-coated vesicle.",
+      proteins: ["clathrin"],
+      keyPoint:
+        "Clathrin-mediated endocytosis recycles membrane so vesicles can be reformed and reused."
+    },
+    {
+      id: "step7",
+      title: "Uncoating and return to reserve pool",
+      shortLabel: "Recycling to reserve pool",
+      description:
+        "Clathrin-coated vesicles are uncoated and processed to regenerate synaptic vesicles. These vesicles return to the reserve pool, where they can be refilled with neurotransmitter and re-enter the cycle.",
+      proteins: ["Vesicular transporters", "clathrin (prior step)"],
+      keyPoint:
+        "Uncoated vesicles rejoin the reserve pool and are reloaded with transmitter, completing the cycle."
+    }
+  ];
+
+  // Key proteins and the step where they primarily act (index into steps[])
+  const proteins = [
+    {
+      id: "prot_vt",
+      name: "Vesicular transporters",
+      description: "Use the H⁺ gradient in the vesicle to concentrate neurotransmitter into synaptic vesicles.",
+      stepIndex: 0 // step1: vesicle filling
+    },
+    {
+      id: "prot_syntaxin",
+      name: "syntaxin",
+      description: "Plasma membrane SNARE protein that helps dock and prime vesicles at the active zone.",
+      stepIndex: 2 // priming
+    },
+    {
+      id: "prot_synaptobrevin",
+      name: "synaptobrevin (VAMP)",
+      description: "Vesicle SNARE that pairs with syntaxin and SNAP25 to form the SNARE complex.",
+      stepIndex: 2
+    },
+    {
+      id: "prot_snap25",
+      name: "SNAP25",
+      description: "Plasma membrane SNARE that forms part of the SNARE complex with syntaxin and synaptobrevin.",
+      stepIndex: 2
+    },
+    {
+      id: "prot_pq",
+      name: "P/Q-type Ca²⁺ channels",
+      description: "Voltage-gated Ca²⁺ channels at the active zone that open during the action potential.",
+      stepIndex: 3 // Ca2+ influx
+    },
+    {
+      id: "prot_synaptotagmin",
+      name: "synaptotagmin",
+      description: "Ca²⁺ sensor on vesicles that triggers SNARE-mediated fusion when Ca²⁺ rises.",
+      stepIndex: 4 // fusion
+    },
+    {
+      id: "prot_clathrin",
+      name: "clathrin",
+      description: "Forms a coat around endocytic pits to help retrieve vesicle membrane.",
+      stepIndex: 5 // endocytosis
+    }
+  ];
+
+  // --- DOM REFERENCES ---
+
+  const page1 = document.getElementById("page1");
+  const page2 = document.getElementById("page2");
+  const nextBtn = document.getElementById("next-btn");
+  const nextHint = document.getElementById("next-hint");
+
+  const cardPool = document.getElementById("card-pool");
+  const dropSlots = document.querySelectorAll(".drop-slot");
+  const checkBtn = document.getElementById("check-btn");
+  const resetBtn = document.getElementById("reset-btn");
+  const feedback = document.getElementById("feedback");
+  const detailsTitle = document.getElementById("details-title");
+  const detailsDescription = document.getElementById("details-description");
+  const detailsProteins = document.getElementById("details-proteins");
+  const detailsPanel = document.getElementById("details-panel");
+
+  const proteinPool = document.getElementById("protein-pool");
+  const proteinStepList = document.getElementById("protein-step-list");
+  const proteinCheckBtn = document.getElementById("protein-check-btn");
+  const proteinResetBtn = document.getElementById("protein-reset-btn");
+  const proteinFeedback = document.getElementById("protein-feedback");
+  const quizBtn = document.getElementById("quiz-btn");
+
+  let firstActivityPerfect = false;
+
+  // --- UTILS ---
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  function getStepById(id) {
+    return steps.find((s) => s.id === id);
+  }
+
+  function showStepDetails(stepId) {
+    const step = getStepById(stepId);
+    if (!step) return;
+    detailsTitle.textContent = step.title;
+    detailsDescription.textContent = step.description;
+
+    detailsProteins.innerHTML = "";
+    if (step.proteins && step.proteins.length > 0) {
+      step.proteins.forEach((p) => {
+        const span = document.createElement("span");
+        span.textContent = p;
+        detailsProteins.appendChild(span);
+      });
+    } else {
+      detailsProteins.textContent = "No specific proteins highlighted at this step.";
+    }
+
+    detailsPanel.classList.add("highlight-details");
+    setTimeout(() => detailsPanel.classList.remove("highlight-details"), 250);
+  }
+
+  // --- PART 1: STEP CARDS & CIRCLE ---
+
+  function renderStepCards() {
+    cardPool.innerHTML = "";
+    const indices = steps.map((_, i) => i);
+    shuffle(indices);
+
+    indices.forEach((idx) => {
+      const step = steps[idx];
+      const card = document.createElement("div");
+      card.className = "step-card";
+      card.draggable = true;
+      card.dataset.stepId = step.id;
+      // No numeric label on the card
+      card.innerHTML = `<span class="step-label">${step.shortLabel}</span>`;
+      addStepCardListeners(card);
+      cardPool.appendChild(card);
+    });
+  }
+
+  function clearStepSlots() {
+    dropSlots.forEach((slot) => {
+      slot.classList.remove("correct-slot", "incorrect-slot", "hovered");
+      slot.classList.add("empty");
+      const inner = slot.querySelector(".drop-slot-inner");
+      inner.innerHTML = `<div class="drop-hint">Drop Step ${parseInt(slot.dataset.slotIndex, 10) + 1} here</div>`;
+    });
+  }
+
+  function resetStepActivity() {
+    feedback.textContent = "";
+    renderStepCards();
+    clearStepSlots();
+  }
+
+  function addStepCardListeners(card) {
+    card.addEventListener("dragstart", (e) => {
+      const stepId = card.dataset.stepId;
+      e.dataTransfer.setData("text/plain", "step:" + stepId);
+      e.dataTransfer.effectAllowed = "move";
+      card.classList.add("dragging");
+    });
+
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+    });
+
+    card.addEventListener("click", () => {
+      showStepDetails(card.dataset.stepId);
+    });
+  }
+
+  // Allow dropping step cards back into pool
+  cardPool.addEventListener("dragover", (e) => {
+    e.preventDefault();
+  });
+
+  cardPool.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData("text/plain");
+    if (!data.startsWith("step:")) return;
+    const stepId = data.slice(5);
+
+    const card = document.querySelector(`.step-card[data-step-id="${stepId}"]`);
+    if (!card) return;
+
+    const parentSlot = card.closest(".drop-slot");
+    if (parentSlot) {
+      parentSlot.classList.add("empty");
+      parentSlot.classList.remove("correct-slot", "incorrect-slot");
+      const inner = parentSlot.querySelector(".drop-slot-inner");
+      inner.innerHTML = `<div class="drop-hint">Drop Step ${parseInt(
+        parentSlot.dataset.slotIndex,
+        10
+      ) + 1} here</div>`;
+    }
+    cardPool.appendChild(card);
+  });
+
+  // Slot handlers
+  dropSlots.forEach((slot) => {
+    slot.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      slot.classList.add("hovered");
+    });
+
+    slot.addEventListener("dragleave", () => {
+      slot.classList.remove("hovered");
+    });
+
+    slot.addEventListener("drop", (e) => {
+      e.preventDefault();
+      slot.classList.remove("hovered");
+      const data = e.dataTransfer.getData("text/plain");
+      if (!data.startsWith("step:")) return;
+      const stepId = data.slice(5);
+
+      const card = document.querySelector(
+        `.step-card[data-step-id="${stepId}"]`
+      );
+      if (!card) return;
+
+      const oldSlot = card.closest(".drop-slot");
+      if (oldSlot && oldSlot !== slot) {
+        oldSlot.classList.add("empty");
+        oldSlot.classList.remove("correct-slot", "incorrect-slot");
+        const oldInner = oldSlot.querySelector(".drop-slot-inner");
+        oldInner.innerHTML = `<div class="drop-hint">Drop Step ${parseInt(
+          oldSlot.dataset.slotIndex,
+          10
+        ) + 1} here</div>`;
+      }
+
+      const existingCardInSlot = slot.querySelector(".step-card");
+      if (existingCardInSlot) {
+        cardPool.appendChild(existingCardInSlot);
+      }
+
+      const inner = slot.querySelector(".drop-slot-inner");
+      inner.innerHTML = "";
+      inner.appendChild(card);
+      slot.classList.remove("empty", "correct-slot", "incorrect-slot");
+    });
+
+    slot.addEventListener("click", (e) => {
+      const card = e.target.closest(".step-card");
+      if (card) {
+        showStepDetails(card.dataset.stepId);
+      }
+    });
+  });
+
+  checkBtn.addEventListener("click", () => {
+    let filledCount = 0;
+    let correctCount = 0;
+    dropSlots.forEach((slot, index) => {
+      slot.classList.remove("correct-slot", "incorrect-slot");
+      const card = slot.querySelector(".step-card");
+      if (!card) {
+        slot.classList.add("incorrect-slot");
+        return;
+      }
+      filledCount++;
+      const stepId = card.dataset.stepId;
+      const step = getStepById(stepId);
+      const correctStep = steps[index];
+      if (step && correctStep && step.id === correctStep.id) {
+        correctCount++;
+        slot.classList.add("correct-slot");
+      } else {
+        slot.classList.add("incorrect-slot");
+      }
+    });
+
+    if (filledCount < steps.length) {
+      feedback.textContent =
+        "Make sure all 7 positions are filled before checking.";
+      feedback.style.color = "#c62828";
+      return;
+    }
+
+    if (correctCount === steps.length) {
+      feedback.textContent =
+        "Excellent! All steps are in the correct order. The vesicle cycle is a continuous loop.";
+      feedback.style.color = "#2e7d32";
+      firstActivityPerfect = true;
+      nextBtn.style.display = "inline-block";
+      nextHint.textContent = "Activity 1 complete! Click the button to go to Activity 2.";
+    } else {
+      feedback.textContent =
+        `You have ${correctCount} out of ${steps.length} steps in the correct position. Adjust the order and try again.`;
+      feedback.style.color = "#c62828";
+    }
+  });
+
+  resetBtn.addEventListener("click", () => {
+    resetStepActivity();
+  });
+
+  // --- PAGE SWITCHING (Activity 1 -> Activity 2) ---
+
+  nextBtn.addEventListener("click", () => {
+    if (!firstActivityPerfect) return;
+    page1.classList.remove("active");
+    page2.classList.add("active");
+    window.scrollTo(0, 0);
+  });
+
+  // --- PART 2: PROTEIN MATCHING ---
+
+  function renderProteinCards() {
+    proteinPool.innerHTML = "";
+    const indices = proteins.map((_, i) => i);
+    shuffle(indices);
+    indices.forEach((idx) => {
+      const p = proteins[idx];
+      const card = document.createElement("div");
+      card.className = "protein-card";
+      card.draggable = true;
+      card.dataset.proteinId = p.id;
+      card.textContent = p.name;
+      addProteinCardListeners(card);
+      proteinPool.appendChild(card);
+    });
+  }
+
+  function addProteinCardListeners(card) {
+    card.addEventListener("dragstart", (e) => {
+      const proteinId = card.dataset.proteinId;
+      e.dataTransfer.setData("text/plain", "protein:" + proteinId);
+      e.dataTransfer.effectAllowed = "move";
+      card.classList.add("dragging");
+    });
+
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+    });
+
+    card.addEventListener("click", () => {
+      const proteinId = card.dataset.proteinId;
+      const protein = proteins.find((p) => p.id === proteinId);
+      if (!protein) return;
+
+      const step = steps[protein.stepIndex];
+      let message = protein.name + ":\n" + protein.description;
+      if (step) {
+        message += "\n\nMain step: " + step.shortLabel + " (\"" + step.title + "\")";
+      }
+      alert(message);
+    });
+  }
+
+  function renderProteinSteps() {
+    proteinStepList.innerHTML = "";
+    steps.forEach((step, index) => {
+      const row = document.createElement("div");
+      row.className = "protein-drop-row";
+
+      const label = document.createElement("div");
+      label.className = "protein-step-label";
+      label.textContent = `Step ${index + 1}: ${step.shortLabel}`;
+
+      const drop = document.createElement("div");
+      drop.className = "protein-drop empty";
+      drop.dataset.stepIndex = index;
+      drop.innerHTML = `<span class="protein-drop-hint">Drop protein(s) for this step here</span>`;
+
+      addProteinDropListeners(drop);
+
+      row.appendChild(label);
+      row.appendChild(drop);
+      proteinStepList.appendChild(row);
+    });
+  }
+
+  function addProteinDropListeners(drop) {
+    drop.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      drop.classList.add("hovered");
+    });
+
+    drop.addEventListener("dragleave", () => {
+      drop.classList.remove("hovered");
+    });
+
+    drop.addEventListener("drop", (e) => {
+      e.preventDefault();
+      drop.classList.remove("hovered");
+      const data = e.dataTransfer.getData("text/plain");
+      if (!data.startsWith("protein:")) return;
+      const proteinId = data.slice(8);
+
+      const card = document.querySelector(
+        `.protein-card[data-protein-id="${proteinId}"]`
+      );
+      if (!card) return;
+
+      // Clear correctness classes from previous checks
+      card.classList.remove("protein-correct", "protein-incorrect");
+
+      // Remove from any other drop zone
+      const oldDrop = card.closest(".protein-drop");
+      if (oldDrop && oldDrop !== drop) {
+        if (oldDrop.querySelectorAll(".protein-card").length === 1) {
+          oldDrop.classList.add("empty");
+          oldDrop.innerHTML =
+            `<span class="protein-drop-hint">Drop protein(s) for this step here</span>`;
+        }
+      }
+
+      // If this drop was empty, clear hint
+      if (drop.classList.contains("empty")) {
+        drop.innerHTML = "";
+      }
+      drop.classList.remove("empty");
+      drop.appendChild(card);
+    });
+  }
+
+  // Protein pool accepts proteins back
+  proteinPool.addEventListener("dragover", (e) => {
+    e.preventDefault();
+  });
+
+  proteinPool.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData("text/plain");
+    if (!data.startsWith("protein:")) return;
+    const proteinId = data.slice(8);
+
+    const card = document.querySelector(
+      `.protein-card[data-protein-id="${proteinId}"]`
+    );
+    if (!card) return;
+
+    const oldDrop = card.closest(".protein-drop");
+    if (oldDrop) {
+      if (oldDrop.querySelectorAll(".protein-card").length === 1) {
+        oldDrop.classList.add("empty");
+        oldDrop.innerHTML =
+          `<span class="protein-drop-hint">Drop protein(s) for this step here</span>`;
+      }
+    }
+
+    card.classList.remove("protein-correct", "protein-incorrect");
+    proteinPool.appendChild(card);
+  });
+
+  proteinCheckBtn.addEventListener("click", () => {
+    let correctCount = 0;
+    let total = proteins.length;
+
+    // Clear old marking
+    document
+      .querySelectorAll(".protein-card")
+      .forEach((c) =>
+        c.classList.remove("protein-correct", "protein-incorrect")
+      );
+
+    proteins.forEach((p) => {
+      const card = document.querySelector(
+        `.protein-card[data-protein-id="${p.id}"]`
+      );
+      if (!card) return;
+      const parentDrop = card.closest(".protein-drop");
+      if (!parentDrop) {
+        card.classList.add("protein-incorrect");
+      } else {
+        const stepIndex = parseInt(parentDrop.dataset.stepIndex, 10);
+        if (stepIndex === p.stepIndex) {
+          correctCount++;
+          card.classList.add("protein-correct");
+        } else {
+          card.classList.add("protein-incorrect");
+        }
+      }
+    });
+
+    if (correctCount === total) {
+      proteinFeedback.textContent =
+        "Nice work! All proteins are matched to the correct steps.";
+      proteinFeedback.style.color = "#2e7d32";
+      if (quizBtn) {
+        quizBtn.style.display = "inline-block";
+      }
+    } else {
+      proteinFeedback.textContent =
+        `You correctly placed ${correctCount} out of ${total} proteins. Check which steps involve SNAREs, Ca²⁺ entry, and endocytosis.`;
+      proteinFeedback.style.color = "#c62828";
+      if (quizBtn) {
+        quizBtn.style.display = "none";
+      }
+    }
+  });
+
+  proteinResetBtn.addEventListener("click", () => {
+    proteinFeedback.textContent = "";
+    if (quizBtn) {
+      quizBtn.style.display = "none";
+    }
+    renderProteinCards();
+    renderProteinSteps();
+  });
+
+  // --- QUIZ NAVIGATION (Activity 3) ---
+
+  if (quizBtn) {
+    quizBtn.addEventListener("click", () => {
+      // Make sure this filename matches your quiz page
+      window.location.href = "presynaptic_quiz.html";
+    });
+  }
+
+  // --- INITIALIZE EVERYTHING ---
+
+  function init() {
+    page1.classList.add("active");
+    page2.classList.remove("active");
+    firstActivityPerfect = false;
+    nextBtn.style.display = "none";
+    nextHint.textContent = "You must get all 7 steps correct to unlock Activity 2.";
+    if (quizBtn) {
+      quizBtn.style.display = "none";
+    }
+    resetStepActivity();
+    renderProteinCards();
+    renderProteinSteps();
+  }
+
+  init();
+</script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Presynaptic Vesicle Cycle Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #304a8a;
+      color: white;
+      padding: 16px 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    header p {
+      margin: 4px 0 0;
+      font-size: 0.95rem;
+      max-width: 900px;
+    }
+
+    main {
+      padding: 20px 24px 40px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      padding: 16px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+    }
+
+    .question {
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #ddd;
+    }
+
+    .question:last-child {
+      border-bottom: none;
+    }
+
+    .question h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .question p {
+      margin: 0 0 6px;
+    }
+
+    .hint-text {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .answers {
+      margin-left: 10px;
+    }
+
+    .answers label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    input[type="text"] {
+      padding: 4px 6px;
+      font-size: 0.95rem;
+      border-radius: 4px;
+      border: 1px solid #bbb;
+      width: 260px;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      border-radius: 6px;
+      border: none;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      background: #304a8a;
+      color: white;
+      margin-right: 8px;
+    }
+
+    button.secondary {
+      background: #8a3044;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    #result-summary {
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
+    .feedback {
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .feedback.correct {
+      color: #2e7d32;
+    }
+
+    .feedback.incorrect {
+      color: #c62828;
+    }
+
+    .score-highlight {
+      font-weight: bold;
+      color: #304a8a;
+    }
+
+    .back-link {
+      margin-top: 16px;
+      font-size: 0.9rem;
+    }
+
+    .back-link a {
+      color: #304a8a;
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Presynaptic Vesicle Cycle Quiz</h1>
+  <p>
+    Test your understanding of the vesicle cycle and key presynaptic proteins. This quiz mixes multiple choice and fill-in-the-blank questions.
+  </p>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>Instructions</h2>
+    <p class="hint-text">
+      Answer each question, then click <strong>Check Answers</strong>. Fill-in-the-blank questions are not case sensitive, but spelling matters.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Quiz</h2>
+
+    <!-- MCQ 1 -->
+    <div class="question" data-question-id="q1" data-type="mc">
+      <h3>1. Which step happens FIRST in the vesicle cycle at a typical excitatory synapse?</h3>
+      <div class="answers">
+        <label><input type="radio" name="q1" value="a"> Ca²⁺ influx through P/Q-type channels</label>
+        <label><input type="radio" name="q1" value="b"> Vesicle fusion and neurotransmitter release</label>
+        <label><input type="radio" name="q1" value="c"> Vesicle filling with neurotransmitter in the reserve pool</label>
+        <label><input type="radio" name="q1" value="d"> Clathrin-mediated endocytosis of vesicle membrane</label>
+      </div>
+      <div class="feedback" id="fb-q1"></div>
+    </div>
+
+    <!-- MCQ 2 -->
+    <div class="question" data-question-id="q2" data-type="mc">
+      <h3>2. Which combination of proteins forms the core SNARE complex for synaptic vesicle fusion?</h3>
+      <div class="answers">
+        <label><input type="radio" name="q2" value="a"> synaptotagmin, P/Q-type Ca²⁺ channels, clathrin</label>
+        <label><input type="radio" name="q2" value="b"> syntaxin, SNAP25, synaptobrevin (VAMP)</label>
+        <label><input type="radio" name="q2" value="c"> P/Q-type Ca²⁺ channels, vesicular transporters, synaptotagmin</label>
+        <label><input type="radio" name="q2" value="d"> clathrin, dynamin, synaptotagmin</label>
+      </div>
+      <div class="feedback" id="fb-q2"></div>
+    </div>
+
+    <!-- MCQ 3 -->
+    <div class="question" data-question-id="q3" data-type="mc">
+      <h3>3. What is the main role of P/Q-type Ca²⁺ channels at the presynaptic terminal?</h3>
+      <div class="answers">
+        <label><input type="radio" name="q3" value="a"> Maintain the resting membrane potential</label>
+        <label><input type="radio" name="q3" value="b"> Generate the action potential in the axon initial segment</label>
+        <label><input type="radio" name="q3" value="c"> Provide local Ca²⁺ entry that triggers vesicle fusion</label>
+        <label><input type="radio" name="q3" value="d"> Pump Ca²⁺ out of the terminal to terminate release</label>
+      </div>
+      <div class="feedback" id="fb-q3"></div>
+    </div>
+
+    <!-- MCQ 4 -->
+    <div class="question" data-question-id="q4" data-type="mc">
+      <h3>4. During clathrin-mediated endocytosis, what is being retrieved from the presynaptic membrane?</h3>
+      <div class="answers">
+        <label><input type="radio" name="q4" value="a"> Only neurotransmitter molecules</label>
+        <label><input type="radio" name="q4" value="b"> Vesicle membrane and vesicle proteins</label>
+        <label><input type="radio" name="q4" value="c"> Postsynaptic receptors</label>
+        <label><input type="radio" name="q4" value="d"> Myelin from nearby axons</label>
+      </div>
+      <div class="feedback" id="fb-q4"></div>
+    </div>
+
+    <!-- Fill-in 1 -->
+    <div class="question" data-question-id="q5" data-type="text">
+      <h3>5. Fill in the blank:</h3>
+      <p>
+        The Ca²⁺ sensor on synaptic vesicles that directly triggers SNARE-mediated fusion when Ca²⁺ rises is
+        <strong>____________________</strong>.
+      </p>
+      <div class="answers">
+        <input type="text" id="q5-input" placeholder="Type the protein name">
+      </div>
+      <div class="feedback" id="fb-q5"></div>
+    </div>
+
+    <!-- Fill-in 2 -->
+    <div class="question" data-question-id="q6" data-type="text">
+      <h3>6. Fill in the blank:</h3>
+      <p>
+        The proteins that use the vesicular H⁺ gradient to concentrate neurotransmitter inside synaptic vesicles are called
+        <strong>____________________</strong>.
+      </p>
+      <div class="answers">
+        <input type="text" id="q6-input" placeholder="Type the term">
+      </div>
+      <div class="feedback" id="fb-q6"></div>
+    </div>
+
+    <!-- Fill-in 3 -->
+    <div class="question" data-question-id="q7" data-type="text">
+      <h3>7. Fill in the blank (short phrase):</h3>
+      <p>
+        The pool of synaptic vesicles that are away from the active zone and can be mobilized during sustained activity is called the
+        <strong>____________________</strong>.
+      </p>
+      <div class="answers">
+        <input type="text" id="q7-input" placeholder="Type the pool name">
+      </div>
+      <div class="feedback" id="fb-q7"></div>
+    </div>
+
+    <!-- Fill-in 4 -->
+    <div class="question" data-question-id="q8" data-type="text">
+      <h3>8. Fill in the blank:</h3>
+      <p>
+        The process of preparing a docked vesicle so that it is fusion-ready and can undergo rapid release when Ca²⁺ rises is called
+        <strong>____________________</strong>.
+      </p>
+      <div class="answers">
+        <input type="text" id="q8-input" placeholder="Single word or short phrase">
+      </div>
+      <div class="feedback" id="fb-q8"></div>
+    </div>
+
+    <div class="controls">
+      <button id="check-btn">Check Answers</button>
+      <button id="reset-btn" class="secondary">Reset Quiz</button>
+      <div id="result-summary"></div>
+    </div>
+
+    <div class="back-link">
+      <!-- Adjust this link to point back to your main activity page if desired -->
+      <a href="presynaptic_cycle_activity.html">&larr; Back to presynaptic activities</a>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Answer key
+  const mcAnswers = {
+    q1: "c",
+    q2: "b",
+    q3: "c",
+    q4: "b"
+  };
+
+  // For text questions, allow simple variants (lowercased for comparison)
+  const textAnswers = {
+    q5: ["synaptotagmin"],
+    q6: ["vesicular transporter", "vesicular transporters"],
+    q7: ["reserve pool", "vesicle reserve pool"],
+    q8: ["priming", "vesicle priming"]
+  };
+
+  const checkBtn = document.getElementById("check-btn");
+  const resetBtn = document.getElementById("reset-btn");
+  const resultSummary = document.getElementById("result-summary");
+
+  function normalize(str) {
+    return str.trim().toLowerCase();
+  }
+
+  function checkQuiz() {
+    let totalQuestions = 8;
+    let correctCount = 0;
+
+    // Clear old feedback
+    for (let q = 1; q <= totalQuestions; q++) {
+      const fb = document.getElementById("fb-q" + q);
+      if (fb) {
+        fb.textContent = "";
+        fb.className = "feedback";
+      }
+    }
+
+    // Multiple choice
+    Object.keys(mcAnswers).forEach((qid) => {
+      const correct = mcAnswers[qid];
+      const fb = document.getElementById("fb-" + qid);
+      const selected = document.querySelector(`input[name="${qid}"]:checked`);
+      if (!selected) {
+        fb.textContent = "No answer selected.";
+        fb.classList.add("incorrect");
+        return;
+      }
+      if (selected.value === correct) {
+        fb.textContent = "Correct.";
+        fb.classList.add("correct");
+        correctCount++;
+      } else {
+        fb.textContent = "Incorrect. Review the vesicle cycle steps and try again.";
+        fb.classList.add("incorrect");
+      }
+    });
+
+    // Text questions
+    Object.keys(textAnswers).forEach((qid) => {
+      const fb = document.getElementById("fb-" + qid);
+      const input = document.getElementById(qid + "-input");
+      if (!input) return;
+      const user = normalize(input.value);
+      if (!user) {
+        fb.textContent = "No answer entered.";
+        fb.classList.add("incorrect");
+        return;
+      }
+      const accepted = textAnswers[qid];
+      const isCorrect = accepted.some((ans) => normalize(ans) === user);
+      if (isCorrect) {
+        fb.textContent = "Correct.";
+        fb.classList.add("correct");
+        correctCount++;
+      } else {
+        fb.textContent = "Not quite. Check your spelling and think about the terminology used in the vesicle cycle.";
+        fb.classList.add("incorrect");
+      }
+    });
+
+    resultSummary.innerHTML =
+      `<span class="score-highlight">Score: ${correctCount} / ${totalQuestions}</span>` +
+      (correctCount === totalQuestions
+        ? " — Excellent! You have a strong grasp of the presynaptic vesicle cycle."
+        : " — Review the feedback above and try to improve your score.");
+  }
+
+  function resetQuiz() {
+    // Reset MCQs
+    Object.keys(mcAnswers).forEach((qid) => {
+      const checked = document.querySelector(`input[name="${qid}"]:checked`);
+      if (checked) checked.checked = false;
+    });
+
+    // Reset text inputs
+    Object.keys(textAnswers).forEach((qid) => {
+      const input = document.getElementById(qid + "-input");
+      if (input) input.value = "";
+    });
+
+    // Clear feedback
+    for (let q = 1; q <= 8; q++) {
+      const fb = document.getElementById("fb-q" + q);
+      if (fb) {
+        fb.textContent = "";
+        fb.className = "feedback";
+      }
+    }
+
+    resultSummary.textContent = "";
+  }
+
+  checkBtn.addEventListener("click", checkQuiz);
+  resetBtn.addEventListener("click", resetQuiz);
+</script>
+</body>
+</html>

@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BMS325 – Metabotropic Receptors & Intracellular Signaling</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f5fb;
+      color: #222;
+    }
+
+    header {
+      background: #283593;
+      color: white;
+      padding: 16px 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    header p {
+      margin: 4px 0 0;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 16px auto 32px;
+      padding: 0 16px;
+    }
+
+    .page {
+      display: none;
+      background: white;
+      border-radius: 10px;
+      padding: 20px 20px 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.4rem;
+      color: #1a237e;
+    }
+
+    h3 {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      color: #303f9f;
+    }
+
+    .instructions {
+      background: #e8eaf6;
+      border-left: 4px solid #3949ab;
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .question-block {
+      margin: 10px 0 16px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+    }
+
+    .question-block p {
+      margin: 0 0 6px;
+      font-weight: 500;
+    }
+
+    .options label {
+      display: block;
+      margin: 3px 0;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .button-row {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: #3949ab;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button[disabled] {
+      background: #b0bec5;
+      cursor: not-allowed;
+    }
+
+    button:not([disabled]):hover {
+      background: #303f9f;
+      transform: translateY(-1px);
+    }
+
+    .feedback {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .feedback.correct {
+      color: #1b5e20;
+    }
+
+    .feedback.incorrect {
+      color: #b71c1c;
+    }
+
+    .nav-note {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* Drag-and-drop styling */
+    .word-bank {
+      margin-top: 12px;
+      padding: 10px;
+      background: #f1f8e9;
+      border-radius: 8px;
+      border: 1px dashed #8bc34a;
+    }
+
+    .word-bank h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: #558b2f;
+    }
+
+    .draggable-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .draggable {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #e0f2f1;
+      border: 1px solid #80cbc4;
+      font-size: 0.85rem;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .draggable:active {
+      cursor: grabbing;
+    }
+
+    .cascade-diagram {
+      margin-top: 10px;
+      padding: 12px;
+      background: #fffde7;
+      border-radius: 8px;
+      border: 1px solid #fff59d;
+      font-size: 0.95rem;
+    }
+
+    .cascade-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .cascade-arrow {
+      font-weight: bold;
+      color: #616161;
+    }
+
+    .arrow-label {
+      font-size: 0.85rem;
+      color: #616161;
+    }
+
+    .dropzone {
+      min-width: 120px;
+      min-height: 24px;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 2px dashed #b0bec5;
+      background: #ffffff;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dropzone.filled {
+      border-style: solid;
+      border-color: #1565c0;
+      background: #e3f2fd;
+    }
+
+    .gpcr-branch {
+      margin-top: 10px;
+      border-top: 1px dashed #ccc;
+      padding-top: 8px;
+    }
+
+    .branch-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .branch-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    /* Amplification animation */
+    .amplification-container {
+      margin-top: 12px;
+      padding: 12px;
+      background: #e3f2fd;
+      border-radius: 8px;
+      border: 1px solid #90caf9;
+    }
+
+    .amp-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .amp-stage-label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #0d47a1;
+    }
+
+    .amp-boxes {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .amp-box {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #bbdefb;
+      padding: 8px;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      font-size: 0.8rem;
+    }
+
+    .amp-box-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #1a237e;
+    }
+
+    .molecule-field {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      align-items: flex-start;
+    }
+
+    .molecule-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1px solid #42a5f5;
+      background: #bbdefb;
+    }
+
+    .amp-explainer {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #1a237e;
+    }
+
+    /* Termination activity */
+    .termination-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .termination-column {
+      background: #f9fbe7;
+      border-radius: 8px;
+      border: 1px solid #dce775;
+      padding: 8px;
+      font-size: 0.9rem;
+    }
+
+    .termination-column h4 {
+      margin: 0 0 6px;
+      font-size: 0.9rem;
+      color: #827717;
+    }
+
+    .termination-dropzone {
+      min-height: 60px;
+      padding: 6px;
+      border-radius: 6px;
+      border: 2px dashed #cddc39;
+      background: #ffffff;
+      font-size: 0.85rem;
+    }
+
+    .small-note {
+      font-size: 0.8rem;
+      color: #616161;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: #e8eaf6;
+      font-size: 0.75rem;
+      color: #3949ab;
+      margin-left: 4px;
+    }
+
+    /* Final quiz styling */
+    .final-fill-input {
+      width: 220px;
+      max-width: 100%;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid #b0bec5;
+      font-size: 0.9rem;
+    }
+
+    .final-score {
+      margin-top: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 800px) {
+      .amp-boxes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .termination-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>BMS325 – Metabotropic Receptors & Intracellular Signaling</h1>
+  <p>Interactive worksheets: metabotropic vs ionotropic, Gs/Gi/Gq cascades, RTKs, steroid hormones & transcription</p>
+  <p>Developed by Dr. Christopher Vaaga, PhD</p>
+</header>
+
+<main>
+  <!-- PAGE 1: BASICS QUIZ -->
+  <section id="page1-basics" class="page active">
+    <h2>1. Basics: Metabotropic vs Ionotropic & Kinases vs Phosphatases</h2>
+    <div class="instructions">
+      Answer the questions about ionotropic vs metabotropic receptors and kinases vs phosphatases.
+      You’ll need 100% correct to unlock the next worksheet.
+    </div>
+
+    <div class="question-block" data-question-id="q1">
+      <p>1. Which statement best describes an ionotropic receptor?</p>
+      <div class="options">
+        <label><input type="radio" name="q1" value="a">
+          It is a G-protein coupled receptor that activates second messenger cascades over seconds–minutes.
+        </label>
+        <label><input type="radio" name="q1" value="b">
+          Ligand binding directly opens an ion channel, producing rapid (milliseconds) changes in membrane potential.
+        </label>
+        <label><input type="radio" name="q1" value="c">
+          It is an intracellular receptor that directly regulates gene transcription.
+        </label>
+        <label><input type="radio" name="q1" value="d">
+          It is a receptor tyrosine kinase that dimerizes and cross-phosphorylates.
+        </label>
+      </div>
+    </div>
+
+    <div class="question-block" data-question-id="q2">
+      <p>2. Which statement best describes a metabotropic (GPCR) receptor?</p>
+      <div class="options">
+        <label><input type="radio" name="q2" value="a">
+          Ligand binding directly opens a pore that passes Na<sup>+</sup> and K<sup>+</sup>.
+        </label>
+        <label><input type="radio" name="q2" value="b">
+          It couples to trimeric G-proteins and activates intracellular second messenger cascades with slower, longer-lasting effects.
+        </label>
+        <label><input type="radio" name="q2" value="c">
+          It can only inhibit neuronal excitability.
+        </label>
+        <label><input type="radio" name="q2" value="d">
+          It is only expressed on presynaptic terminals.
+        </label>
+      </div>
+    </div>
+
+    <div class="question-block" data-question-id="q3">
+      <p>3. Compared to ionotropic glutamate receptors, metabotropic glutamate receptors (mGluRs) typically:</p>
+      <div class="options">
+        <label><input type="radio" name="q3" value="a">
+          Signal on longer timescales (seconds to minutes) via G-protein cascades and can affect transcription.
+        </label>
+        <label><input type="radio" name="q3" value="b">
+          Produce only fast EPSCs on the order of milliseconds.
+        </label>
+        <label><input type="radio" name="q3" value="c">
+          Are impermeable to Ca<sup>2+</sup> but otherwise identical to NMDA receptors.
+        </label>
+        <label><input type="radio" name="q3" value="d">
+          Cannot produce signal amplification.
+        </label>
+      </div>
+    </div>
+
+    <div class="question-block" data-question-id="q4">
+      <p>4. Which statement correctly matches kinases and phosphatases?</p>
+      <div class="options">
+        <label><input type="radio" name="q4" value="a">
+          Kinases remove phosphate groups; phosphatases add phosphate groups.
+        </label>
+        <label><input type="radio" name="q4" value="b">
+          Both kinases and phosphatases only act on DNA.
+        </label>
+        <label><input type="radio" name="q4" value="c">
+          Kinases add phosphate groups (often activating proteins); phosphatases remove phosphate groups (often returning proteins toward baseline).
+        </label>
+        <label><input type="radio" name="q4" value="d">
+          Kinases only act at synapses, whereas phosphatases only act in the nucleus.
+        </label>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="checkBasicsBtn">Check answers</button>
+      <button id="resetBasicsBtn" type="button">Reset</button>
+      <button id="toAmplificationBtn" type="button" disabled>
+        Go to GPCR amplification &amp; cascades ▶
+      </button>
+    </div>
+    <div id="basicsFeedback" class="feedback"></div>
+    <p class="nav-note">The next worksheet unlocks when all 4 questions are correct.</p>
+  </section>
+
+  <!-- PAGE 2: AMPLIFICATION ANIMATION -->
+  <section id="page2-amplification" class="page">
+    <h2>2. GPCR Cascades &amp; Signal Amplification</h2>
+    <div class="instructions">
+      Explore how a single ligand-bound GPCR can be amplified into many second messengers and phosphorylated targets.
+      Move the slider to step through the cascade.
+    </div>
+
+    <p>
+      Metabotropic receptors (&quot;GPCRs&quot;) couple ligand binding to intracellular cascades:
+      GPCR → G-protein → enzyme (e.g., adenylyl cyclase) → second messenger (cAMP, IP<sub>3</sub>, DAG) → kinases → many target proteins.
+      Each step can amplify the signal.
+    </p>
+
+    <div class="amplification-container">
+      <div class="amp-controls">
+        <label for="ampStepRange"><strong>Step in cascade:</strong></label>
+        <input id="ampStepRange" type="range" min="0" max="4" step="1" value="0" />
+        <span id="ampStepLabel" class="amp-stage-label"></span>
+      </div>
+
+      <div class="amp-boxes">
+        <div class="amp-box">
+          <div class="amp-box-title">Ligand-bound GPCRs</div>
+          <div id="amp-box-0" class="molecule-field"></div>
+        </div>
+        <div class="amp-box">
+          <div class="amp-box-title">Activated G-proteins</div>
+          <div id="amp-box-1" class="molecule-field"></div>
+        </div>
+        <div class="amp-box">
+          <div class="amp-box-title">Adenylyl cyclase / PLCβ</div>
+          <div id="amp-box-2" class="molecule-field"></div>
+        </div>
+        <div class="amp-box">
+          <div class="amp-box-title">Second messengers<br>(cAMP, IP<sub>3</sub>, DAG)</div>
+          <div id="amp-box-3" class="molecule-field"></div>
+        </div>
+        <div class="amp-box">
+          <div class="amp-box-title">Phosphorylated targets</div>
+          <div id="amp-box-4" class="molecule-field"></div>
+        </div>
+      </div>
+
+      <div id="ampExplainer" class="amp-explainer"></div>
+    </div>
+
+    <div class="button-row">
+      <button id="toGsBtn" type="button">Continue to G<sub>s</sub> drag-and-drop ▶</button>
+    </div>
+    <p class="nav-note">
+      You don’t need a score here – once you’re comfortable with amplification, move on to the G<sub>s</sub> cascade.
+    </p>
+  </section>
+
+  <!-- PAGE 3: Gs DRAG & DROP -->
+  <section id="page3-gs" class="page">
+    <h2>3. G<sub>s</sub> Pathway Drag-and-Drop</h2>
+    <div class="instructions">
+      Build the G<sub>s</sub> signaling cascade starting with a canonical receptor.
+      Drag components from the word bank into the correct positions in the cascade diagram.
+    </div>
+
+    <div class="cascade-diagram">
+      <div class="cascade-row">
+        <span class="arrow-label">Ligand-bound receptor:</span>
+        <span class="dropzone" data-answer="D1 receptor"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="Gαs"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="Adenylyl cyclase"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="cAMP"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="PKA"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="Target ion channels / receptors / CREB"></span>
+      </div>
+    </div>
+
+    <div class="word-bank">
+      <h4>Word bank</h4>
+      <div class="draggable-container">
+        <!-- shuffled order -->
+        <div class="draggable" draggable="true" data-label="PLCβ">PLCβ</div>
+        <div class="draggable" draggable="true" data-label="Gαq">Gαq</div>
+        <div class="draggable" draggable="true" data-label="D2 receptor">D2 receptor</div>
+        <div class="draggable" draggable="true" data-label="IP3 receptor on ER">IP3 receptor on ER</div>
+        <div class="draggable" draggable="true" data-label="PKA">PKA</div>
+        <div class="draggable" draggable="true" data-label="DAG">DAG</div>
+        <div class="draggable" draggable="true" data-label="Gαi">Gαi</div>
+        <div class="draggable" draggable="true" data-label="Target ion channels / receptors / CREB">
+          Target ion channels / receptors / CREB
+        </div>
+        <div class="draggable" draggable="true" data-label="cAMP">cAMP</div>
+        <div class="draggable" draggable="true" data-label="Ca2+ release from ER">Ca2+ release from ER</div>
+        <div class="draggable" draggable="true" data-label="D1 receptor">D1 receptor</div>
+        <div class="draggable" draggable="true" data-label="Adenylyl cyclase">Adenylyl cyclase</div>
+        <div class="draggable" draggable="true" data-label="Gαs">Gαs</div>
+        <div class="draggable" draggable="true" data-label="GIRK channel">GIRK channel</div>
+        <div class="draggable" draggable="true" data-label="mGluR1">mGluR1</div>
+        <div class="draggable" draggable="true" data-label="PKC">PKC</div>
+        <div class="draggable" draggable="true" data-label="IP3">IP3</div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="checkGsBtn" type="button">Check G<sub>s</sub> cascade</button>
+      <button id="resetGsBtn" type="button">Reset</button>
+      <button id="toGiBtn" type="button" disabled>Unlock G<sub>i</sub> pathway ▶</button>
+    </div>
+    <div id="gsFeedback" class="feedback"></div>
+    <p class="nav-note">You must correctly complete the G<sub>s</sub> cascade to unlock G<sub>i</sub>.</p>
+  </section>
+
+  <!-- PAGE 4: Gi DRAG & DROP -->
+  <section id="page4-gi" class="page">
+    <h2>4. G<sub>i</sub> Pathway Drag-and-Drop</h2>
+    <div class="instructions">
+      Build the G<sub>i</sub> signaling cascade starting with a canonical receptor.
+      Drag components from the word bank into the correct positions in the cascade diagram.
+    </div>
+
+    <div class="cascade-diagram">
+      <div class="cascade-row">
+        <span class="arrow-label">Ligand-bound receptor:</span>
+        <span class="dropzone" data-answer="D2 receptor"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="Gαi"></span>
+        <span class="cascade-arrow">|</span>
+        <span class="arrow-label">Inhibits</span>
+        <span class="dropzone" data-answer="Adenylyl cyclase"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="cAMP"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="PKA"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="Target ion channels / receptors / CREB"></span>
+      </div>
+      <div class="cascade-row">
+        <span class="arrow-label">Parallel membrane-delimited pathway:</span>
+        <span class="dropzone" data-answer="GIRK channel"></span>
+        <span class="arrow-label">opened by βγ to hyperpolarize</span>
+      </div>
+      <p class="small-note">
+        Hint: G<sub>i</sub> <em>inhibits</em> adenylyl cyclase (↓ cAMP, ↓ PKA) and often activates GIRK channels to reduce excitability.
+      </p>
+    </div>
+
+    <div class="word-bank">
+      <h4>Word bank</h4>
+      <div class="draggable-container">
+        <!-- same shuffled order -->
+        <div class="draggable" draggable="true" data-label="PLCβ">PLCβ</div>
+        <div class="draggable" draggable="true" data-label="Gαq">Gαq</div>
+        <div class="draggable" draggable="true" data-label="D2 receptor">D2 receptor</div>
+        <div class="draggable" draggable="true" data-label="IP3 receptor on ER">IP3 receptor on ER</div>
+        <div class="draggable" draggable="true" data-label="PKA">PKA</div>
+        <div class="draggable" draggable="true" data-label="DAG">DAG</div>
+        <div class="draggable" draggable="true" data-label="Gαi">Gαi</div>
+        <div class="draggable" draggable="true" data-label="Target ion channels / receptors / CREB">
+          Target ion channels / receptors / CREB
+        </div>
+        <div class="draggable" draggable="true" data-label="cAMP">cAMP</div>
+        <div class="draggable" draggable="true" data-label="Ca2+ release from ER">Ca2+ release from ER</div>
+        <div class="draggable" draggable="true" data-label="D1 receptor">D1 receptor</div>
+        <div class="draggable" draggable="true" data-label="Adenylyl cyclase">Adenylyl cyclase</div>
+        <div class="draggable" draggable="true" data-label="Gαs">Gαs</div>
+        <div class="draggable" draggable="true" data-label="GIRK channel">GIRK channel</div>
+        <div class="draggable" draggable="true" data-label="mGluR1">mGluR1</div>
+        <div class="draggable" draggable="true" data-label="PKC">PKC</div>
+        <div class="draggable" draggable="true" data-label="IP3">IP3</div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="checkGiBtn" type="button">Check G<sub>i</sub> cascade</button>
+      <button id="resetGiBtn" type="button">Reset</button>
+      <button id="toGqBtn" type="button" disabled>Unlock G<sub>q</sub> pathway ▶</button>
+    </div>
+    <div id="giFeedback" class="feedback"></div>
+    <p class="nav-note">Correct completion of the G<sub>i</sub> cascade unlocks the G<sub>q</sub> activity.</p>
+  </section>
+
+  <!-- PAGE 5: Gq DRAG & DROP WITH BRANCHING -->
+  <section id="page5-gq" class="page">
+    <h2>5. G<sub>q</sub> Pathway Drag-and-Drop</h2>
+    <div class="instructions">
+      Build the G<sub>s</sub> signaling cascade starting with a canonical receptor.
+      Drag components from the word bank into the correct positions in the cascade diagram.
+    </div>
+
+    <div class="cascade-diagram">
+      <div class="cascade-row">
+        <span class="arrow-label">Ligand-bound receptor:</span>
+        <span class="dropzone" data-answer="mGluR1"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="Gαq"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="PLCβ"></span>
+      </div>
+
+      <div class="gpcr-branch">
+        <div class="branch-label">Branch 1: Protein Phosphorylation Pathway</div>
+        <div class="branch-row">
+          <span class="arrow-label">From PLCβ:</span>
+          <span class="dropzone" data-answer="DAG"></span>
+          <span class="cascade-arrow">→</span>
+          <span class="dropzone" data-answer="PKC"></span>
+          <span class="cascade-arrow">→</span>
+          <span class="dropzone" data-answer="Target ion channels / receptors / CREB"></span>
+        </div>
+
+        <div class="branch-label">Branch 2: Ca<sup>2+</sup> Release Pathway</div>
+        <div class="branch-row">
+          <span class="arrow-label">From PLCβ:</span>
+          <span class="dropzone" data-answer="IP3"></span>
+          <span class="cascade-arrow">→</span>
+          <span class="dropzone" data-answer="IP3 receptor on ER"></span>
+          <span class="cascade-arrow">→</span>
+          <span class="dropzone" data-answer="Ca2+ release from ER"></span>
+        </div>
+      </div>
+
+      <p class="small-note">
+        Hint: G<sub>q</sub> activation results in two parallel pathways - one activating a kinase and one triggering Ca<sup>2+</sup> release.
+      </p>
+    </div>
+
+    <div class="word-bank">
+      <h4>Word bank</h4>
+      <div class="draggable-container">
+        <!-- same shuffled order -->
+        <div class="draggable" draggable="true" data-label="PLCβ">PLCβ</div>
+        <div class="draggable" draggable="true" data-label="Gαq">Gαq</div>
+        <div class="draggable" draggable="true" data-label="D2 receptor">D2 receptor</div>
+        <div class="draggable" draggable="true" data-label="IP3 receptor on ER">IP3 receptor on ER</div>
+        <div class="draggable" draggable="true" data-label="PKA">PKA</div>
+        <div class="draggable" draggable="true" data-label="DAG">DAG</div>
+        <div class="draggable" draggable="true" data-label="Gαi">Gαi</div>
+        <div class="draggable" draggable="true" data-label="Target ion channels / receptors / CREB">
+          Target ion channels / receptors / CREB
+        </div>
+        <div class="draggable" draggable="true" data-label="cAMP">cAMP</div>
+        <div class="draggable" draggable="true" data-label="Ca2+ release from ER">Ca2+ release from ER</div>
+        <div class="draggable" draggable="true" data-label="D1 receptor">D1 receptor</div>
+        <div class="draggable" draggable="true" data-label="Adenylyl cyclase">Adenylyl cyclase</div>
+        <div class="draggable" draggable="true" data-label="Gαs">Gαs</div>
+        <div class="draggable" draggable="true" data-label="GIRK channel">GIRK channel</div>
+        <div class="draggable" draggable="true" data-label="mGluR1">mGluR1</div>
+        <div class="draggable" draggable="true" data-label="PKC">PKC</div>
+        <div class="draggable" draggable="true" data-label="IP3">IP3</div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="checkGqBtn" type="button">Check G<sub>q</sub> cascades</button>
+      <button id="resetGqBtn" type="button">Reset</button>
+      <button id="toTerminationBtn" type="button" disabled>Unlock GPCR termination activity ▶</button>
+    </div>
+    <div id="gqFeedback" class="feedback"></div>
+    <p class="nav-note">You must complete both branches correctly to unlock the termination worksheet.</p>
+  </section>
+
+  <!-- PAGE 6: TERMINATING GPCR SIGNALING -->
+  <section id="page6-termination" class="page">
+    <h2>6. Terminating GPCR Signaling</h2>
+    <div class="instructions">
+      Drag each mechanism into the level where it primarily acts: the GPCR itself, the G-protein, or downstream target proteins.
+    </div>
+
+    <div class="termination-grid">
+      <div class="termination-column" data-level="gpcr">
+        <h4>GPCR-level mechanisms<span class="tag">Receptor</span></h4>
+        <div class="termination-dropzone dropzone" data-answer="gpcr"></div>
+      </div>
+      <div class="termination-column" data-level="gprotein">
+        <h4>G-protein-level mechanisms<span class="tag">Gα / βγ</span></h4>
+        <div class="termination-dropzone dropzone" data-answer="gprotein"></div>
+      </div>
+      <div class="termination-column" data-level="effector">
+        <h4>Effector-level mechanisms<span class="tag">Downstream proteins</span></h4>
+        <div class="termination-dropzone dropzone" data-answer="effector"></div>
+      </div>
+    </div>
+
+    <p class="small-note">
+      You can place multiple draggable items into each box; correctness is checked by where they end up.
+    </p>
+
+    <div class="word-bank">
+      <h4>Mechanisms to classify</h4>
+      <div class="draggable-container">
+        <div class="draggable" draggable="true" data-label="Receptor phosphorylation/β-arrestin recruitment">
+          Receptor phosphorylation/β-arrestin recruitment
+        </div>
+        <div class="draggable" draggable="true" data-label="Receptor internalization">
+          Receptor internalization
+        </div>
+        <div class="draggable" draggable="true" data-label="RGS proteins">
+          RGS proteins
+        </div>
+        <div class="draggable" draggable="true" data-label="Protein phosphatases">
+          Protein phosphatases
+        </div>
+        <div class="draggable" draggable="true" data-label="Agonist unbinding">
+          Agonist unbinding
+        </div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="checkTerminationBtn" type="button">Check GPCR termination</button>
+      <button id="resetTerminationBtn" type="button">Reset</button>
+      <button id="toRTKPageBtn" type="button" disabled>Unlock RTK & hormone cascades ▶</button>
+    </div>
+    <div id="terminationFeedback" class="feedback"></div>
+
+    <p class="nav-note">
+      Suggested mapping:
+      GPCR-level – phosphorylation, β-arrestin, internalization, agonist unbinding;
+      G-protein-level – RGS proteins;
+      Effector-level – protein phosphatases acting on downstream targets.
+    </p>
+  </section>
+
+  <!-- PAGE 7: OTHER CASCADES – RTKs & STEROID HORMONE RECEPTORS -->
+  <section id="page7-rtk" class="page">
+    <h2>7. Other Intracellular Cascades: RTKs & Steroid Hormone Receptors</h2>
+    <div class="instructions">
+      Build signaling pathways for receptor tyrosine kinases (RTKs) and steroid hormone receptors,
+      then complete a short quiz. You’ll need 6/6 correct on the quiz to unlock the final integrative quiz.
+    </div>
+
+    <h3>A. RTK cascade:</h3>
+    <div class="cascade-diagram">
+      <div class="cascade-row">
+        <span class="arrow-label">Ligand:</span>
+        <span class="dropzone" data-answer="BDNF"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="TrkB receptor"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="dimerization and autophosphorylation"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="Ras"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="MAP/ERK cascade"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="transcription factors"></span>
+      </div>
+      </div>
+
+    <h3>B. Steroid hormone cascade:</h3>
+    <div class="cascade-diagram">
+      <div class="cascade-row">
+        <span class="arrow-label">Hormone:</span>
+        <span class="dropzone" data-answer="Cortisol"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="cytoplasmic GR"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="nuclear translocation"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="binding to GREs on DNA"></span>
+        <span class="cascade-arrow">→</span>
+        <span class="dropzone" data-answer="Altered transcription of target genes"></span>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="checkRTKCascadesBtn" type="button">Check RTK & cortisol cascades</button>
+      <button id="resetRTKCascadesBtn" type="button">Reset cascades</button>
+    </div>
+    <div id="rtkCascadeFeedback" class="feedback"></div>
+
+    <div class="word-bank">
+      <h4>Word bank (for both cascades)</h4>
+      <div class="draggable-container">
+        <!-- shuffled order -->
+        <div class="draggable" draggable="true" data-label="Cortisol">Cortisol</div>
+        <div class="draggable" draggable="true" data-label="MAP/ERK cascade">MAP/ERK cascade</div>
+        <div class="draggable" draggable="true" data-label="TrkB receptor">TrkB receptor</div>
+        <div class="draggable" draggable="true" data-label="transcription factors">transcription factors</div>
+        <div class="draggable" draggable="true" data-label="cytoplasmic GR">cytoplasmic GR</div>
+        <div class="draggable" draggable="true" data-label="dimerization and autophosphorylation">
+          dimerization and autophosphorylation
+        </div>
+        <div class="draggable" draggable="true" data-label="binding to GREs on DNA">
+          binding to GREs on DNA
+        </div>
+        <div class="draggable" draggable="true" data-label="Ras">Ras</div>
+        <div class="draggable" draggable="true" data-label="BDNF">BDNF</div>
+        <div class="draggable" draggable="true" data-label="Altered transcription of target genes">
+          Altered transcription of target genes
+        </div>
+        <div class="draggable" draggable="true" data-label="nuclear translocation">nuclear translocation</div>
+      </div>
+    </div>
+
+    <h3>C. Quiz: RTKs, Steroid Hormones, and Transcription (6 questions)</h3>
+    <div class="question-block" data-question-id="rtkq1">
+      <p>1. BDNF primarily signals in neurons via which receptor type?</p>
+      <div class="options">
+        <label><input type="radio" name="rtkq1" value="a"> G-protein coupled receptor (GPCR)</label>
+        <label><input type="radio" name="rtkq1" value="b"> Ligand-gated ion channel</label>
+        <label><input type="radio" name="rtkq1" value="c"> Receptor tyrosine kinase (TrkB)</label>
+        <label><input type="radio" name="rtkq1" value="d"> Intracellular nuclear receptor</label>
+      </div>
+    </div>
+
+    <div class="question-block" data-question-id="rtkq2">
+      <p>2. A key early event after ligand binding to an RTK such as TrkB is:</p>
+      <div class="options">
+        <label><input type="radio" name="rtkq2" value="a">
+          Opening of a pore that passes Na<sup>+</sup> and K<sup>+</sup>.
+        </label>
+        <label><input type="radio" name="rtkq2" value="b">
+          Dimerization and autophosphorylation of the receptor on tyrosine residues.
+        </label>
+        <label><input type="radio" name="rtkq2" value="c">
+          Direct binding of cortisol to the receptor.
+        </label>
+        <label><input type="radio" name="rtkq2" value="d">
+          Immediate recruitment of β-arrestin to the receptor.</label>
+      </div>
+    </div>
+
+    <div class="question-block" data-question-id="rtkq3">
+      <p>3. The Ras–MAPK/ERK pathway downstream of RTKs is especially important for:</p>
+      <div class="options">
+        <label><input type="radio" name="rtkq3" value="a">
+          Rapid opening of GIRK channels on the membrane.
+        </label>
+        <label><input type="radio" name="rtkq3" value="b">
+          Long-term changes in gene expression and structural plasticity.
+        </label>
+        <label><input type="radio" name="rtkq3" value="c">
+          Degradation of cAMP into AMP.</label>
+        <label><input type="radio" name="rtkq3" value="d">
+          Release of neurotransmitter from presynaptic vesicles.</label>
+      </div>
+    </div>
+
+    <div class="question-block" data-question-id="rtkq4">
+      <p>4. Cortisol exerts many of its long-term effects in the brain by:</p>
+      <div class="options">
+        <label><input type="radio" name="rtkq4" value="a">
+          Binding to GPCRs on the plasma membrane and opening ion channels.
+        </label>
+        <label><input type="radio" name="rtkq4" value="b">
+          Binding to intracellular glucocorticoid receptors that act as ligand-activated transcription factors.
+        </label>
+        <label><input type="radio" name="rtkq4" value="c">
+          Directly blocking voltage-gated Na<sup>+</sup> channels.
+        </label>
+        <label><input type="radio" name="rtkq4" value="d">
+          Only acting on peripheral tissues and never affecting neurons.</label>
+      </div>
+    </div>
+
+    <div class="question-block" data-question-id="rtkq5">
+      <p>5. Compared to typical GPCR-mediated synaptic responses, transcriptional effects of cortisol–GR signaling:</p>
+      <div class="options">
+        <label><input type="radio" name="rtkq5" value="a">
+          Occur on much slower timescales (minutes–hours) and can persist for days.
+        </label>
+        <label><input type="radio" name="rtkq5" value="b">
+          Are faster than ionotropic receptor currents and occur in microseconds.
+        </label>
+        <label><input type="radio" name="rtkq5" value="c">
+          Have identical timing to EPSCs mediated by AMPA receptors.
+        </label>
+        <label><input type="radio" name="rtkq5" value="d">
+          Only occur in the presence of β-arrestin.</label>
+      </div>
+    </div>
+
+    <div class="question-block" data-question-id="rtkq6">
+      <p>6. The specific DNA sequences bound by glucocorticoid receptor dimers to regulate transcription are called:</p>
+      <div class="options">
+        <label><input type="radio" name="rtkq6" value="a"> CREs (cAMP response elements)</label>
+        <label><input type="radio" name="rtkq6" value="b"> GREs (glucocorticoid response elements)</label>
+        <label><input type="radio" name="rtkq6" value="c"> NMDA sites</label>
+        <label><input type="radio" name="rtkq6" value="d"> IP<sub>3</sub> receptors</label>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="checkRTKQuizBtn" type="button">Check RTK & hormone quiz</button>
+      <button id="resetRTKQuizBtn" type="button">Reset</button>
+      <button id="toFinalQuizBtn" type="button" disabled>Unlock final integrative quiz ▶</button>
+    </div>
+    <div id="rtkQuizFeedback" class="feedback"></div>
+    <p class="nav-note">
+      You must answer all 6 questions correctly to unlock the final quiz.
+    </p>
+  </section>
+
+  <!-- PAGE 8: FINAL QUIZ -->
+  <section id="page8-finalquiz" class="page">
+    <h2>8. Final Quiz: Integrating G-Protein, RTK & Steroid Hormone Pathways</h2>
+    <div class="instructions">
+      Use what you’ve built in the previous worksheets to answer these questions.
+      Questions cover G<sub>s</sub>, G<sub>i</sub>, G<sub>q</sub>, second messengers, GPCR termination, RTKs, BDNF/TrkB, and cortisol/GR.
+    </div>
+
+    <!-- MC Q1 -->
+    <div class="question-block" data-question-id="fq1">
+      <p>1. A D1-like dopamine receptor in striatum most commonly couples to which G-protein?</p>
+      <div class="options">
+        <label><input type="radio" name="fq1" value="a"> Gαi</label>
+        <label><input type="radio" name="fq1" value="b"> Gαs</label>
+        <label><input type="radio" name="fq1" value="c"> Gαq</label>
+        <label><input type="radio" name="fq1" value="d"> Gα12/13</label>
+      </div>
+    </div>
+
+    <!-- MC Q2 -->
+    <div class="question-block" data-question-id="fq2">
+      <p>2. Activation of a D2-like dopamine receptor typically has what effect on cAMP levels?</p>
+      <div class="options">
+        <label><input type="radio" name="fq2" value="a"> Increases cAMP via stimulation of adenylyl cyclase</label>
+        <label><input type="radio" name="fq2" value="b"> Decreases cAMP via inhibition of adenylyl cyclase</label>
+        <label><input type="radio" name="fq2" value="c"> Has no effect on cAMP; only opens NMDA receptors</label>
+        <label><input type="radio" name="fq2" value="d"> Directly degrades cAMP into AMP</label>
+      </div>
+    </div>
+
+    <!-- MC Q3 -->
+    <div class="question-block" data-question-id="fq3">
+      <p>3. A Group I mGluR (e.g., mGluR1) is primarily linked to which G-protein and effector enzyme?</p>
+      <div class="options">
+        <label><input type="radio" name="fq3" value="a">
+          Gαs → adenylyl cyclase → cAMP
+        </label>
+        <label><input type="radio" name="fq3" value="b">
+          Gαi → adenylyl cyclase → decreased cAMP
+        </label>
+        <label><input type="radio" name="fq3" value="c">
+          Gαq → PLCβ → IP<sub>3</sub> and DAG
+        </label>
+        <label><input type="radio" name="fq3" value="d">
+          Gαs → PLCβ → IP<sub>3</sub> and DAG
+        </label>
+      </div>
+    </div>
+
+    <!-- MC Q4 -->
+    <div class="question-block" data-question-id="fq4">
+      <p>4. Which pathway most directly opens GIRK (G-protein activated inwardly rectifying K<sup>+</sup>) channels to hyperpolarize neurons?</p>
+      <div class="options">
+        <label><input type="radio" name="fq4" value="a">
+          Gαs activation of PKA
+        </label>
+        <label><input type="radio" name="fq4" value="b">
+          Gαi βγ subunits acting on GIRK channels
+        </label>
+        <label><input type="radio" name="fq4" value="c">
+          Gαq activation of PLCβ
+        </label>
+        <label><input type="radio" name="fq4" value="d">
+          Receptor tyrosine kinase activation of Ras
+        </label>
+      </div>
+    </div>
+
+    <!-- MC Q5 -->
+    <div class="question-block" data-question-id="fq5">
+      <p>5. RGS (Regulator of G-protein Signaling) proteins terminate GPCR signaling primarily by:</p>
+      <div class="options">
+        <label><input type="radio" name="fq5" value="a">
+          Phosphorylating the GPCR so that β-arrestin can bind.
+        </label>
+        <label><input type="radio" name="fq5" value="b">
+          Accelerating the intrinsic GTPase activity of Gα, converting GTP to GDP faster.
+        </label>
+        <label><input type="radio" name="fq5" value="c">
+          Dephosphorylating PKA and PKC.
+        </label>
+        <label><input type="radio" name="fq5" value="d">
+          Directly degrading cAMP and IP<sub>3</sub>.
+        </label>
+      </div>
+    </div>
+
+    <!-- MC Q6 -->
+    <div class="question-block" data-question-id="fq6">
+      <p>6. β-arrestin binding to a phosphorylated GPCR typically leads to:</p>
+      <div class="options">
+        <label><input type="radio" name="fq6" value="a">
+          Enhanced coupling to Gαs and stronger cAMP production.
+        </label>
+        <label><input type="radio" name="fq6" value="b">
+          Receptor desensitization and internalization, reducing G-protein signaling.
+        </label>
+        <label><input type="radio" name="fq6" value="c">
+          Immediate opening of ligand-gated ion channels.
+        </label>
+        <label><input type="radio" name="fq6" value="d">
+          Activation of voltage-gated Na<sup>+</sup> channels.
+        </label>
+      </div>
+    </div>
+
+    <!-- Fill Q7 -->
+    <div class="question-block" data-question-id="fq7">
+      <p>
+        7. <strong>Fill in the blank:</strong> G<sub>s</sub>-coupled receptors generally
+        <em>________</em> adenylyl cyclase activity.
+      </p>
+      <p class="small-note">Answer with a single word such as "stimulate", "activate", or "increase".</p>
+      <input type="text" class="final-fill-input" data-type="fill" data-answers="stimulate|stimulates|activate|activates|increase|increases" />
+    </div>
+
+    <!-- Fill Q8 -->
+    <div class="question-block" data-question-id="fq8">
+      <p>
+        8. <strong>Fill in the blank:</strong> The lipid-derived second messenger produced by PLCβ that activates PKC is
+        <em>________</em>.
+      </p>
+      <input type="text" class="final-fill-input" data-type="fill" data-answers="dag|diacylglycerol" />
+    </div>
+
+    <!-- Fill Q9 -->
+    <div class="question-block" data-question-id="fq9">
+      <p>
+        9. <strong>Fill in the blank:</strong> Enzymes that remove phosphate groups from proteins and help terminate phosphorylation-dependent signaling are called
+        <em>________</em>.
+      </p>
+      <input type="text" class="final-fill-input" data-type="fill" data-answers="phosphatase|phosphatases|protein phosphatase|protein phosphatases" />
+    </div>
+
+    <!-- MC Q10 -->
+    <div class="question-block" data-question-id="fq10">
+      <p>10. Which combination best matches a G<sub>q</sub> pathway component with its <em>direct</em> downstream effect?</p>
+      <div class="options">
+        <label><input type="radio" name="fq10" value="a">
+          IP<sub>3</sub> → opens voltage-gated Na<sup>+</sup> channels
+        </label>
+        <label><input type="radio" name="fq10" value="b">
+          DAG → activates PKA
+        </label>
+        <label><input type="radio" name="fq10" value="c">
+          IP<sub>3</sub> → binds IP<sub>3</sub> receptors on ER to trigger Ca<sup>2+</sup> release
+        </label>
+        <label><input type="radio" name="fq10" value="d">
+          cAMP → directly opens IP<sub>3</sub> receptors on ER
+        </label>
+      </div>
+    </div>
+
+    <!-- NEW MC Q11 -->
+    <div class="question-block" data-question-id="fq11">
+      <p>11. Which sequence best describes a canonical BDNF–TrkB RTK/MAPK cascade?</p>
+      <div class="options">
+        <label><input type="radio" name="fq11" value="a">
+          BDNF → GPCR → Gαs → cAMP → PKA
+        </label>
+        <label><input type="radio" name="fq11" value="b">
+          BDNF → TrkB (RTK) dimerization → Ras → MAPK/ERK → transcription factor phosphorylation
+        </label>
+        <label><input type="radio" name="fq11" value="c">
+          BDNF → ionotropic receptor → immediate Na<sup>+</sup> influx
+        </label>
+        <label><input type="radio" name="fq11" value="d">
+          BDNF → NMDA receptor → IP<sub>3</sub> → DAG
+        </label>
+      </div>
+    </div>
+
+    <!-- NEW MC Q12 -->
+    <div class="question-block" data-question-id="fq12">
+      <p>12. Cortisol–GR signaling is best described as:</p>
+      <div class="options">
+        <label><input type="radio" name="fq12" value="a">
+          A classic GPCR pathway acting solely at the plasma membrane.
+        </label>
+        <label><input type="radio" name="fq12" value="b">
+          A steroid hormone binding an intracellular receptor that dimerizes, moves into the nucleus, and directly regulates transcription.
+        </label>
+        <label><input type="radio" name="fq12" value="c">
+          A ligand-gated ion channel that passes Cl<sup>−</sup>.
+        </label>
+        <label><input type="radio" name="fq12" value="d">
+          An RTK that activates Ras but never affects gene expression.
+        </label>
+      </div>
+    </div>
+
+    <!-- NEW MC Q13 -->
+    <div class="question-block" data-question-id="fq13">
+      <p>13. Which of the following is a <em>shared</em> feature of GPCR, RTK, and steroid hormone receptor signaling?</p>
+      <div class="options">
+        <label><input type="radio" name="fq13" value="a">
+          All three directly form ion channels in the membrane.
+        </label>
+        <label><input type="radio" name="fq13" value="b">
+          All three can ultimately influence gene transcription through kinase cascades or direct DNA binding.
+        </label>
+        <label><input type="radio" name="fq13" value="c">
+          All three act only on millisecond timescales and never produce long-term changes.
+        </label>
+        <label><input type="radio" name="fq13" value="d">
+          All three require RGS proteins to terminate signaling.
+        </label>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="checkFinalQuizBtn" type="button">Check final quiz</button>
+      <button id="resetFinalQuizBtn" type="button">Reset</button>
+    </div>
+    <div id="finalQuizFeedback" class="feedback"></div>
+    <div id="finalQuizScore" class="final-score"></div>
+    <p class="nav-note">
+      Aim for 10–13 correct to show mastery of metabotropic GPCR signaling, RTKs, and steroid hormone receptor cascades.
+    </p>
+  </section>
+</main>
+
+<script>
+  // ---------- PAGE NAVIGATION ----------
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const page = document.getElementById(pageId);
+    if (page) {
+      page.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  // Helper: safely add click listeners without crashing if element is missing
+  function safeClick(id, handler) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', handler);
+  }
+
+  // ---------- BASIC QUIZ ----------
+  function checkBasicsQuiz() {
+    const answers = {
+      q1: 'b',
+      q2: 'b',
+      q3: 'a',
+      q4: 'c'
+    };
+
+    let allCorrect = true;
+    let allAnswered = true;
+
+    Object.keys(answers).forEach(qid => {
+      const block = document.querySelector(`.question-block[data-question-id="${qid}"]`);
+      const selected = block.querySelector('input[type="radio"]:checked');
+      if (!selected) {
+        allAnswered = false;
+        allCorrect = false;
+        return;
+      }
+      if (selected.value !== answers[qid]) {
+        allCorrect = false;
+      }
+    });
+
+    const feedback = document.getElementById('basicsFeedback');
+    const nextBtn = document.getElementById('toAmplificationBtn');
+
+    if (!allAnswered) {
+      feedback.textContent = 'Please answer all questions before checking.';
+      feedback.className = 'feedback incorrect';
+      return;
+    }
+
+    if (allCorrect) {
+      feedback.textContent = 'Excellent – all correct! Metabotropic vs ionotropic and kinase vs phosphatase basics look solid. You can move on.';
+      feedback.className = 'feedback correct';
+      if (nextBtn) nextBtn.disabled = false;
+    } else {
+      feedback.textContent = 'Some answers are incorrect. Review metabotropic vs ionotropic features and kinase/phosphatase roles, then try again.';
+      feedback.className = 'feedback incorrect';
+      if (nextBtn) nextBtn.disabled = true;
+    }
+  }
+
+  function resetBasicsQuiz() {
+    document.querySelectorAll('#page1-basics input[type="radio"]').forEach(r => r.checked = false);
+    const feedback = document.getElementById('basicsFeedback');
+    if (feedback) {
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+    }
+    const nextBtn = document.getElementById('toAmplificationBtn');
+    if (nextBtn) nextBtn.disabled = true;
+  }
+
+  // ---------- DRAG & DROP CORE ----------
+  let currentDragLabel = null;
+
+  function initDragAndDrop() {
+    document.querySelectorAll('.draggable').forEach(el => {
+      el.addEventListener('dragstart', e => {
+        currentDragLabel = e.target.getAttribute('data-label');
+        e.dataTransfer.setData('text/plain', currentDragLabel);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+    });
+
+    document.querySelectorAll('.dropzone').forEach(zone => {
+      zone.addEventListener('dragover', e => {
+        e.preventDefault();
+      });
+
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        const label = e.dataTransfer.getData('text/plain') || currentDragLabel;
+        if (!label) return;
+
+        // For termination activity, allow multiple labels; for others, single.
+        if (zone.classList.contains('termination-dropzone')) {
+          const span = document.createElement('span');
+          span.textContent = label;
+          span.className = 'small-note';
+          span.style.display = 'inline-block';
+          span.style.margin = '2px 4px';
+          zone.appendChild(span);
+        } else {
+          zone.textContent = label;
+        }
+
+        zone.classList.add('filled');
+      });
+    });
+  }
+
+  function resetDropzonesWithin(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.querySelectorAll('.dropzone').forEach(zone => {
+      zone.textContent = '';
+      zone.classList.remove('filled');
+    });
+  }
+
+  function resetTerminationZones() {
+    document.querySelectorAll('.termination-dropzone').forEach(zone => {
+      zone.innerHTML = '';
+      zone.classList.remove('filled');
+    });
+  }
+
+  // Generic drag-drop checker for cascade pages
+  function checkDragAndDropPage(pageId, feedbackId, unlockButtonId) {
+    const page = document.getElementById(pageId);
+    if (!page) return;
+
+    const zones = page.querySelectorAll('.dropzone');
+    let allFilled = true;
+    let allCorrect = true;
+
+    zones.forEach(zone => {
+      const expected = zone.getAttribute('data-answer');
+      if (!expected) return; // some zones may not be answerable
+      const text = zone.textContent.trim();
+      if (!text) {
+        allFilled = false;
+        allCorrect = false;
+      } else if (text !== expected) {
+        allCorrect = false;
+      }
+    });
+
+    const feedback = document.getElementById(feedbackId);
+    const unlockBtn = unlockButtonId ? document.getElementById(unlockButtonId) : null;
+
+    if (!feedback) return;
+
+    if (!allFilled) {
+      feedback.textContent = 'Fill in all blanks before checking.';
+      feedback.className = 'feedback incorrect';
+      if (unlockBtn) unlockBtn.disabled = true;
+      return;
+    }
+
+    if (allCorrect) {
+      feedback.textContent = 'Nice work – this cascade is correct.';
+      feedback.className = 'feedback correct';
+      if (unlockBtn) unlockBtn.disabled = false;
+    } else {
+      feedback.textContent = 'Some positions are incorrect. Double-check which components belong in this pathway.';
+      feedback.className = 'feedback incorrect';
+      if (unlockBtn) unlockBtn.disabled = true;
+    }
+  }
+
+  // ---------- AMPLIFICATION ANIMATION ----------
+  const amplificationStages = [
+    {
+      label: 'Step 1 – A single ligand-bound GPCR.',
+      counts: [1, 0, 0, 0, 0],
+      explainer: 'One neurotransmitter or neuromodulator binds a single GPCR.'
+    },
+    {
+      label: 'Step 2 – Multiple activated G-proteins.',
+      counts: [1, 5, 0, 0, 0],
+      explainer: 'One active GPCR can activate multiple G-proteins over its active lifetime.'
+    },
+    {
+      label: 'Step 3 – Enzymes like adenylyl cyclase or PLCβ.',
+      counts: [1, 5, 10, 0, 0],
+      explainer: 'Each activated Gα can recruit and modulate multiple effector enzymes (AC or PLCβ).'
+    },
+    {
+      label: 'Step 4 – Many second messengers (cAMP, IP3, DAG).',
+      counts: [1, 5, 10, 50, 0],
+      explainer: 'Each enzyme generates numerous molecules of second messenger, strongly amplifying the signal.'
+    },
+    {
+      label: 'Step 5 – Many phosphorylated target proteins.',
+      counts: [1, 5, 10, 50, 100],
+      explainer: 'Kinases like PKA and PKC phosphorylate many ion channels, receptors, and transcription factors (e.g., CREB).'
+    }
+  ];
+
+  function renderAmplification(stepIndex) {
+    const stage = amplificationStages[stepIndex];
+    const labelEl = document.getElementById('ampStepLabel');
+    const explainerEl = document.getElementById('ampExplainer');
+    if (labelEl) labelEl.textContent = stage.label;
+    if (explainerEl) explainerEl.textContent = stage.explainer;
+
+    stage.counts.forEach((count, i) => {
+      const box = document.getElementById(`amp-box-${i}`);
+      if (!box) return;
+      box.innerHTML = '';
+      for (let k = 0; k < count; k++) {
+        const dot = document.createElement('div');
+        dot.className = 'molecule-dot';
+        box.appendChild(dot);
+      }
+    });
+  }
+
+  // ---------- TERMINATION CHECKER ----------
+  function checkTermination() {
+    const mapping = {
+      'Receptor phosphorylation/β-arrestin recruitment': 'gpcr',
+      'Receptor internalization': 'gpcr',
+      'Agonist unbinding ': 'gpcr',
+      'RGS proteins': 'gprotein',
+      'Protein phosphatases': 'effector'
+    };
+
+    let allPlaced = true;
+    let allCorrect = true;
+
+    document.querySelectorAll('.termination-column').forEach(col => {
+      const level = col.getAttribute('data-level');
+      const dz = col.querySelector('.termination-dropzone');
+      if (!dz) return;
+      const labels = Array.from(dz.querySelectorAll('span.small-note')).map(span => span.textContent.trim());
+      if (labels.length === 0) {
+        allPlaced = false;
+        allCorrect = false;
+      }
+      labels.forEach(lbl => {
+        const expectedLevel = mapping[lbl];
+        if (!expectedLevel) {
+          allCorrect = false;
+        } else if (expectedLevel !== level) {
+          allCorrect = false;
+        }
+      });
+    });
+
+    const fb = document.getElementById('terminationFeedback');
+    const toRTKBtn = document.getElementById('toRTKPageBtn');
+    if (!fb) return;
+
+    if (!allPlaced) {
+      fb.textContent = 'Place each mechanism into one of the three boxes before checking.';
+      fb.className = 'feedback incorrect';
+      if (toRTKBtn) toRTKBtn.disabled = true;
+      return;
+    }
+    if (allCorrect) {
+      fb.textContent = 'Correct! You’ve correctly matched receptor-, G-protein-, and effector-level termination mechanisms. RTK & hormone cascades unlocked.';
+      fb.className = 'feedback correct';
+      if (toRTKBtn) toRTKBtn.disabled = false;
+    } else {
+      fb.textContent = 'Some mechanisms are in the wrong category. Re-check where β-arrestin, RGS, and phosphatases act.';
+      fb.className = 'feedback incorrect';
+      if (toRTKBtn) toRTKBtn.disabled = true;
+    }
+  }
+
+  // ---------- RTK / HORMONE QUIZ CHECKER ----------
+  function checkRTKQuiz() {
+    const answers = {
+      rtkq1: 'c',
+      rtkq2: 'b',
+      rtkq3: 'b',
+      rtkq4: 'b',
+      rtkq5: 'a',
+      rtkq6: 'b'
+    };
+
+    let allAnswered = true;
+    let allCorrect = true;
+
+    Object.keys(answers).forEach(qid => {
+      const block = document.querySelector(`.question-block[data-question-id="${qid}"]`);
+      if (!block) return;
+      const selected = block.querySelector('input[type="radio"]:checked');
+      if (!selected) {
+        allAnswered = false;
+        allCorrect = false;
+      } else if (selected.value !== answers[qid]) {
+        allCorrect = false;
+      }
+    });
+
+    const fb = document.getElementById('rtkQuizFeedback');
+    const toFinalBtn = document.getElementById('toFinalQuizBtn');
+    if (!fb) return;
+
+    if (!allAnswered) {
+      fb.textContent = 'Please answer all 6 questions before checking.';
+      fb.className = 'feedback incorrect';
+      if (toFinalBtn) toFinalBtn.disabled = true;
+      return;
+    }
+
+    if (allCorrect) {
+      fb.textContent = 'Excellent – your understanding of RTKs, BDNF/TrkB, and cortisol–GR transcription is solid. Final quiz unlocked.';
+      fb.className = 'feedback correct';
+      if (toFinalBtn) toFinalBtn.disabled = false;
+    } else {
+      fb.textContent = 'Some answers are incorrect. Review how RTKs and steroid hormone receptors couple to transcription and try again.';
+      fb.className = 'feedback incorrect';
+      if (toFinalBtn) toFinalBtn.disabled = true;
+    }
+  }
+
+  function resetRTKQuiz() {
+    document.querySelectorAll('#page7-rtk input[type="radio"]').forEach(r => r.checked = false);
+    const fb = document.getElementById('rtkQuizFeedback');
+    if (fb) {
+      fb.textContent = '';
+      fb.className = 'feedback';
+    }
+    const toFinalBtn = document.getElementById('toFinalQuizBtn');
+    if (toFinalBtn) toFinalBtn.disabled = true;
+  }
+
+  // ---------- FINAL QUIZ CHECKER ----------
+  function checkFinalQuiz() {
+    const mcAnswers = {
+      fq1: 'b',
+      fq2: 'b',
+      fq3: 'c',
+      fq4: 'b',
+      fq5: 'b',
+      fq6: 'b',
+      fq10: 'c',
+      fq11: 'b',
+      fq12: 'b',
+      fq13: 'b'
+    };
+
+    let totalQuestions = 13;
+    let correctCount = 0;
+
+    Object.keys(mcAnswers).forEach(qid => {
+      const block = document.querySelector(`.question-block[data-question-id="${qid}"]`);
+      if (!block) return;
+      const selected = block.querySelector('input[type="radio"]:checked');
+      if (selected && selected.value === mcAnswers[qid]) {
+        correctCount += 1;
+      }
+    });
+
+    ['fq7', 'fq8', 'fq9'].forEach(qid => {
+      const block = document.querySelector(`.question-block[data-question-id="${qid}"]`);
+      if (!block) return;
+      const input = block.querySelector('input[data-type="fill"]');
+      if (!input) return;
+      const raw = input.value.trim().toLowerCase();
+      if (!raw) return;
+
+      const normalized = raw.replace(/\s+/g, ' ');
+      const answersRaw = input.getAttribute('data-answers') || '';
+      const allowed = answersRaw.split('|').map(a => a.trim().toLowerCase());
+      if (allowed.includes(normalized)) {
+        correctCount += 1;
+      }
+    });
+
+    const fb = document.getElementById('finalQuizFeedback');
+    const score = document.getElementById('finalQuizScore');
+    if (score) score.textContent = `Score: ${correctCount} / ${totalQuestions}`;
+
+    if (!fb) return;
+
+    if (correctCount >= 10) {
+      fb.textContent = 'Great job – your integration of G-protein pathways, RTKs, and steroid hormone signaling looks strong.';
+      fb.className = 'feedback correct';
+    } else if (correctCount >= 7) {
+      fb.textContent = 'Mixed performance. Review which receptors couple to which cascades (G_s, G_i, G_q, RTK, steroid receptors) and how they affect transcription, then try again.';
+      fb.className = 'feedback incorrect';
+    } else {
+      fb.textContent = 'This score suggests several key concepts are still unclear. Revisit the earlier worksheets (Gs/Gi/Gq, RTK/BDNF, cortisol/GR, and termination) and then retake this quiz.';
+      fb.className = 'feedback incorrect';
+    }
+  }
+
+  function resetFinalQuiz() {
+    document.querySelectorAll('#page8-finalquiz input[type="radio"]').forEach(r => r.checked = false);
+    document.querySelectorAll('#page8-finalquiz input[data-type="fill"]').forEach(inp => inp.value = '');
+    const fb = document.getElementById('finalQuizFeedback');
+    const score = document.getElementById('finalQuizScore');
+    if (fb) {
+      fb.textContent = '';
+      fb.className = 'feedback';
+    }
+    if (score) score.textContent = '';
+  }
+
+  // ---------- INIT ----------
+  document.addEventListener('DOMContentLoaded', () => {
+    // Basics page
+    safeClick('checkBasicsBtn', checkBasicsQuiz);
+    safeClick('resetBasicsBtn', resetBasicsQuiz);
+    safeClick('toAmplificationBtn', () => showPage('page2-amplification'));
+
+    // Amplification page
+    const ampRange = document.getElementById('ampStepRange');
+    if (ampRange) {
+      ampRange.addEventListener('input', () => {
+        renderAmplification(Number(ampRange.value));
+      });
+      renderAmplification(Number(ampRange.value));
+    }
+
+    safeClick('toGsBtn', () => showPage('page3-gs'));
+
+    // Drag & drop
+    initDragAndDrop();
+
+    // Gs page
+    safeClick('checkGsBtn', () => checkDragAndDropPage('page3-gs', 'gsFeedback', 'toGiBtn'));
+    safeClick('resetGsBtn', () => {
+      resetDropzonesWithin('page3-gs');
+      const fb = document.getElementById('gsFeedback');
+      if (fb) {
+        fb.textContent = '';
+        fb.className = 'feedback';
+      }
+      const btn = document.getElementById('toGiBtn');
+      if (btn) btn.disabled = true;
+    });
+    safeClick('toGiBtn', () => showPage('page4-gi'));
+
+    // Gi page
+    safeClick('checkGiBtn', () => checkDragAndDropPage('page4-gi', 'giFeedback', 'toGqBtn'));
+    safeClick('resetGiBtn', () => {
+      resetDropzonesWithin('page4-gi');
+      const fb = document.getElementById('giFeedback');
+      if (fb) {
+        fb.textContent = '';
+        fb.className = 'feedback';
+      }
+      const btn = document.getElementById('toGqBtn');
+      if (btn) btn.disabled = true;
+    });
+    safeClick('toGqBtn', () => showPage('page5-gq'));
+
+    // Gq page
+    safeClick('checkGqBtn', () => checkDragAndDropPage('page5-gq', 'gqFeedback', 'toTerminationBtn'));
+    safeClick('resetGqBtn', () => {
+      resetDropzonesWithin('page5-gq');
+      const fb = document.getElementById('gqFeedback');
+      if (fb) {
+        fb.textContent = '';
+        fb.className = 'feedback';
+      }
+      const btn = document.getElementById('toTerminationBtn');
+      if (btn) btn.disabled = true;
+    });
+    safeClick('toTerminationBtn', () => showPage('page6-termination'));
+
+    // Termination page
+    safeClick('checkTerminationBtn', checkTermination);
+    safeClick('resetTerminationBtn', () => {
+      resetTerminationZones();
+      const fb = document.getElementById('terminationFeedback');
+      if (fb) {
+        fb.textContent = '';
+        fb.className = 'feedback';
+      }
+      const btn = document.getElementById('toRTKPageBtn');
+      if (btn) btn.disabled = true;
+    });
+    safeClick('toRTKPageBtn', () => showPage('page7-rtk'));
+
+    // RTK / hormone cascades check
+    safeClick('checkRTKCascadesBtn', () => {
+      checkDragAndDropPage('page7-rtk', 'rtkCascadeFeedback', null);
+    });
+    safeClick('resetRTKCascadesBtn', () => {
+      resetDropzonesWithin('page7-rtk');
+      const fb = document.getElementById('rtkCascadeFeedback');
+      if (fb) {
+        fb.textContent = '';
+        fb.className = 'feedback';
+      }
+    });
+
+    // RTK / hormone quiz
+    safeClick('checkRTKQuizBtn', checkRTKQuiz);
+    safeClick('resetRTKQuizBtn', resetRTKQuiz);
+    safeClick('toFinalQuizBtn', () => showPage('page8-finalquiz'));
+
+    // Final quiz
+    safeClick('checkFinalQuizBtn', checkFinalQuiz);
+    safeClick('resetFinalQuizBtn', resetFinalQuiz);
+  });
+</script>
+
+</body>
+</html>

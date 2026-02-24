@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BMS325 – Neurotransmitter Systems Activity</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3 {
+      color: #1b4b72;
+    }
+
+    .intro-box {
+      border-left: 4px solid #1b4b72;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+      background: #f4f7fb;
+    }
+
+    .section {
+      display: none;
+      margin-top: 25px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-locked {
+      opacity: 0.6;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      background: #1b4b72;
+      color: #fff;
+    }
+
+    .question {
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    .question.incorrect {
+      border: 2px solid #d9534f;
+    }
+
+    .question.correct {
+      border: 2px solid #5cb85c;
+    }
+
+    .question p {
+      margin: 0 0 6px 0;
+      font-weight: bold;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 4px;
+      cursor: pointer;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 420px;
+      padding: 6px;
+      margin-top: 3px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 8px 14px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      background: #1b4b72;
+      color: white;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: default;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .feedback.success {
+      color: #5cb85c;
+    }
+
+    .feedback.error {
+      color: #d9534f;
+    }
+
+    .clinical-case {
+      background: #fff7e6;
+      border-left: 4px solid #f0ad4e;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    .note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    .progress {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    .final-message {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      background: #e6f5ea;
+      border: 1px solid #5cb85c;
+      font-weight: bold;
+      display: none;
+    }
+
+    /* Drag-and-drop tokens */
+    .token-bank {
+      border: 1px dashed #999;
+      background: #fdfdfd;
+      padding: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 40px;
+    }
+
+    .token {
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #555;
+      background: #e8edf7;
+      cursor: grab;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+
+    .dropzone {
+      min-height: 26px;
+      min-width: 180px;
+      border: 1px dashed #999;
+      padding: 4px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 4px;
+      background: #fdfdfd;
+    }
+
+    .dropzone.over {
+      background: #e0f7ff;
+    }
+
+    /* Layout for drag-and-drop targets */
+    .drag-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .drag-item {
+      flex: 1 1 calc(50% - 10px);
+      min-width: 260px;
+    }
+
+    .mock-trace-note {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .psp-canvas-container {
+      text-align: center;
+    }
+
+    canvas {
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
+    /* Image matching */
+    .image-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .neuroimage {
+      max-width: 260px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .image-label-zone {
+      flex: 1;
+      min-width: 200px;
+    }
+  </style>
+
+</head>
+
+
+<body>
+
+<h1>BMS 325 – Neurotransmitter Systems Interactive Activity</h1>
+<div class="intro-box">
+  <p><strong>Estimated time:</strong> 10–15 minutes</p>
+  <p>
+    Work through each section in order. You’ll review key concepts from Lecture 14, 
+    answer short questions, complete drag-and-drop activities, and apply them to clinical scenarios. 
+    You must reach 100% in a section to unlock the next one.
+  </p>
+</div>
+
+<div class="progress" id="progressText">
+  Progress: Section 1 of 3 unlocked.
+</div>
+
+<!-- ========== SECTION 1: Neurotransmitter Basics ========== -->
+<section class="section active" id="section1" data-next="section2">
+  <div class="section-header">
+    <h2>Section 1 – What Defines a Neurotransmitter?</h2>
+    <span class="badge">Foundations</span>
+  </div>
+
+  <p>
+    In this course, a substance is considered a <strong>neurotransmitter</strong> if it:
+  </p>
+  <ul>
+    <li>Is present in <strong>synaptic vesicles</strong> in the nerve terminal.</li>
+    <li><strong>Mimics the action of nerve stimulation</strong> when applied exogenously.</li>
+    <li>Is <strong>released during synaptic activity</strong>.</li>
+    <li><strong>Binds receptors</strong> on the postsynaptic neuron.</li>
+  </ul>
+
+  <div class="question" id="s1_q1_container">
+    <p>1. Which statement best captures one of the defining features of a neurotransmitter?</p>
+    <label><input type="radio" name="s1_q1" value="a">
+      A. It is only present in the postsynaptic membrane.</label>
+    <label><input type="radio" name="s1_q1" value="b">
+      B. It is stored in presynaptic vesicles and released during synaptic activity.</label>
+    <label><input type="radio" name="s1_q1" value="c">
+      C. It is any small molecule present anywhere in the brain.</label>
+    <label><input type="radio" name="s1_q1" value="d">
+      D. It only needs to bind a receptor; release is not required.</label>
+  </div>
+
+  <div class="question" id="s1_q2_container">
+    <p>2. The effect of a neurotransmitter on a neuron is determined primarily by:</p>
+    <label><input type="radio" name="s1_q2" value="a">
+      A. The size of the neurotransmitter molecule.</label>
+    <label><input type="radio" name="s1_q2" value="b">
+      B. The specific receptors expressed on the postsynaptic neuron.</label>
+    <label><input type="radio" name="s1_q2" value="c">
+      C. The location of the soma of the presynaptic neuron.</label>
+    <label><input type="radio" name="s1_q2" value="d">
+      D. Whether the neurotransmitter is a peptide or small molecule.</label>
+  </div>
+
+
+  <button onclick="checkSection('section1')">Check Section 1 Answers</button>
+  <div class="feedback" id="section1_feedback"></div>
+</section>
+
+<!-- ========== SECTION 2: Glutamate, GABA, ACh & Physiology ========== -->
+<section class="section section-locked" id="section2" data-next="section3">
+  <div class="section-header">
+    <h2>Section 2 – Glutamate, GABA, and Acetylcholine</h2>
+    <span class="badge">Core Systems & Activities</span>
+  </div>
+
+  
+
+  <!-- Core recall questions -->
+  <div class="question" id="s2_q1_container">
+    <p>1. Fill in the blank: The primary <strong>excitatory</strong> neurotransmitter in the CNS is __________.</p>
+    <input type="text" id="s2_q1" placeholder="Neurotransmitter name">
+  </div>
+
+  <div class="question" id="s2_q2_container">
+    <p>2. Fill in the blank: The primary <strong>inhibitory</strong> neurotransmitter in the CNS is __________.</p>
+    <input type="text" id="s2_q2" placeholder="Neurotransmitter name">
+  </div>
+
+  <div class="question" id="s2_q3_container">
+    <p>3. Which protein family is primarily responsible for clearing glutamate from the synaptic cleft (especially via astrocytes)?</p>
+    <label><input type="radio" name="s2_q3" value="a"> A. VGLUT</label>
+    <label><input type="radio" name="s2_q3" value="b"> B. GAT</label>
+    <label><input type="radio" name="s2_q3" value="c"> C. EAATs</label>
+    <label><input type="radio" name="s2_q3" value="d"> D. VAChT</label>
+  </div>
+
+  <div class="question" id="s2_q4_container">
+    <p>4. What is the <strong>primary</strong> mechanism for terminating acetylcholine signaling at the synapse?</p>
+    <label><input type="radio" name="s2_q4" value="a"> A. Reuptake of ACh by the presynaptic terminal.</label>
+    <label><input type="radio" name="s2_q4" value="b"> B. Breakdown of ACh by acetylcholinesterase.</label>
+    <label><input type="radio" name="s2_q4" value="c"> C. Diffusion of ACh away from the cleft.</label>
+    <label><input type="radio" name="s2_q4" value="d"> D. Endocytosis of ACh receptors.</label>
+  </div>
+
+  <div class="question" id="s2_q5_container">
+    <p>5. Short answer: Name the enzyme that synthesizes acetylcholine from choline and acetyl-CoA.</p>
+    <input type="text" id="s2_q5" placeholder="Enzyme name">
+  </div>
+
+  <!-- Drag-and-drop activity split into 3 questions -->
+  <div class="question" id="s2_drag_intro_container">
+    <p>6. Drag-and-drop activities – Synthesis enzymes, vesicular packaging, and termination/clearance</p>
+    <div class="note">
+      For each sub-question, drag labels from the word bank into the appropriate boxes for each neurotransmitter and process.
+    </div>
+  </div>
+
+  <!-- 6a: Synthesis enzymes -->
+  <div class="question" id="s2_syn_group_container">
+    <p>6a. <strong>Synthesis enzymes</strong> – glutamate, GABA, ACh, and monoamines</p>
+    <div class="token-bank" id="tokenBankSyn">
+      <div class="token" id="token_gad" draggable="true" data-token="gad" data-bank="tokenBankSyn">
+        Glutamic acid decarboxylase (GAD)
+      </div>
+
+      <div class="token" id="token_glutaminase" draggable="true" data-token="glutaminase" data-bank="tokenBankSyn">
+        Glutaminase
+      </div>
+      
+      
+      <div class="token" id="token_chat" draggable="true" data-token="chat" data-bank="tokenBankSyn">
+        Choline acetyltransferase (ChAT)
+      </div>
+
+      <div class="token" id="token_th" draggable="true" data-token="th" data-bank="tokenBankSyn">
+        Tyrosine hydroxylase (TH)
+      </div>
+    </div>
+
+    <div class="drag-grid">
+      <div class="question drag-item" id="s2_glu_syn_container">
+        <p>Glutamate – <strong>Synthesis</strong></p>
+        <span>Enzyme:</span>
+        <div class="dropzone" id="drop_s2_glu_syn" data-input="s2_glu_syn"></div>
+        <input type="hidden" id="s2_glu_syn">
+      </div>
+
+      <div class="question drag-item" id="s2_gaba_syn_container">
+        <p>GABA – <strong>Synthesis</strong></p>
+        <span>Enzyme:</span>
+        <div class="dropzone" id="drop_s2_gaba_syn" data-input="s2_gaba_syn"></div>
+        <input type="hidden" id="s2_gaba_syn">
+      </div>
+
+      <div class="question drag-item" id="s2_ach_syn_container">
+        <p>Acetylcholine – <strong>Synthesis</strong></p>
+        <span>Enzyme:</span>
+        <div class="dropzone" id="drop_s2_ach_syn" data-input="s2_ach_syn"></div>
+        <input type="hidden" id="s2_ach_syn">
+      </div>
+
+      <div class="question drag-item" id="s2_mono_syn_container">
+        <p>Monoamines – <strong>Synthesis</strong></p>
+        <span>Key shared enzyme:</span>
+        <div class="dropzone" id="drop_s2_mono_syn" data-input="s2_mono_syn"></div>
+        <input type="hidden" id="s2_mono_syn">
+      </div>
+    </div>
+  </div>
+
+  <!-- 6b: Vesicular packaging -->
+  <div class="question" id="s2_pack_group_container">
+    <p>6b. <strong>Vesicular packaging</strong> – glutamate, GABA, ACh, and monoamines</p>
+    <div class="token-bank" id="tokenBankPack">
+      <div class="token" id="token_vacht" draggable="true" data-token="vacht" data-bank="tokenBankPack">
+        VAChT
+      </div>
+
+      <div class="token" id="token_vgat" draggable="true" data-token="vgat" data-bank="tokenBankPack">
+        VGAT
+      </div>
+      
+      <div class="token" id="token_vglut" draggable="true" data-token="vglut" data-bank="tokenBankPack">
+        VGLUT
+      </div>
+
+      <div class="token" id="token_vmat2" draggable="true" data-token="vmat2" data-bank="tokenBankPack">
+        VMAT2
+      </div>
+    </div>
+
+    <div class="drag-grid">
+      <div class="question drag-item" id="s2_glu_pack_container">
+        <p>Glutamate – <strong>Vesicular packaging</strong></p>
+        <span>Transporter:</span>
+        <div class="dropzone" id="drop_s2_glu_pack" data-input="s2_glu_pack"></div>
+        <input type="hidden" id="s2_glu_pack">
+      </div>
+
+      <div class="question drag-item" id="s2_gaba_pack_container">
+        <p>GABA – <strong>Vesicular packaging</strong></p>
+        <span>Transporter:</span>
+        <div class="dropzone" id="drop_s2_gaba_pack" data-input="s2_gaba_pack"></div>
+        <input type="hidden" id="s2_gaba_pack">
+      </div>
+
+      <div class="question drag-item" id="s2_ach_pack_container">
+        <p>Acetylcholine – <strong>Vesicular packaging</strong></p>
+        <span>Transporter:</span>
+        <div class="dropzone" id="drop_s2_ach_pack" data-input="s2_ach_pack"></div>
+        <input type="hidden" id="s2_ach_pack">
+      </div>
+
+      <div class="question drag-item" id="s2_mono_pack_container">
+        <p>Monoamines – <strong>Vesicular packaging</strong></p>
+        <span>Transporter:</span>
+        <div class="dropzone" id="drop_s2_mono_pack" data-input="s2_mono_pack"></div>
+        <input type="hidden" id="s2_mono_pack">
+      </div>
+    </div>
+  </div>
+
+  <!-- 6c: Termination/clearance -->
+  <div class="question" id="s2_clear_group_container">
+    <p>6c. <strong>Termination/clearance</strong> – glutamate, GABA, ACh, and monoamines</p>
+    <div class="token-bank" id="tokenBankClear">
+      
+      <div class="token" id="token_gat" draggable="true" data-token="gat" data-bank="tokenBankClear">
+        GAT
+      </div>
+
+     <div class="token" id="token_reuptake" draggable="true" data-token="reuptake" data-bank="tokenBankClear">
+        Reuptake via DAT/NET/SERT
+      </div>
+      
+      <div class="token" id="token_eaat" draggable="true" data-token="eaat" data-bank="tokenBankClear">
+        EAAT (astrocytic glutamate transporter)
+      </div>
+
+      <div class="token" id="token_ache" draggable="true" data-token="ache" data-bank="tokenBankClear">
+        Acetylcholinesterase (AChE)
+      </div>
+
+ 
+    </div>
+
+    <div class="drag-grid">
+      <div class="question drag-item" id="s2_glu_clear_container">
+        <p>Glutamate – <strong>Termination/clearance</strong></p>
+        <span>Primary mechanism:</span>
+        <div class="dropzone" id="drop_s2_glu_clear" data-input="s2_glu_clear"></div>
+        <input type="hidden" id="s2_glu_clear">
+      </div>
+
+      <div class="question drag-item" id="s2_gaba_clear_container">
+        <p>GABA – <strong>Termination/clearance</strong></p>
+        <span>Primary mechanism:</span>
+        <div class="dropzone" id="drop_s2_gaba_clear" data-input="s2_gaba_clear"></div>
+        <input type="hidden" id="s2_gaba_clear">
+      </div>
+
+      <div class="question drag-item" id="s2_ach_clear_container">
+        <p>Acetylcholine – <strong>Termination/clearance</strong></p>
+        <span>Primary mechanism:</span>
+        <div class="dropzone" id="drop_s2_ach_clear" data-input="s2_ach_clear"></div>
+        <input type="hidden" id="s2_ach_clear">
+      </div>
+
+      <div class="question drag-item" id="s2_mono_clear_container">
+        <p>Monoamines – <strong>Termination/clearance</strong></p>
+        <span>Primary mechanism at CNS synapses:</span>
+        <div class="dropzone" id="drop_s2_mono_clear" data-input="s2_mono_clear"></div>
+        <input type="hidden" id="s2_mono_clear">
+      </div>
+    </div>
+  </div>
+
+  <!-- PSP alpha-function graph with baseline -->
+  <div class="question" id="s2_pspGraph_container">
+    <p>7. Mock synaptic potentials – Alpha-function conductances</p>
+    <div class="note">
+      The graph shows two synaptic potentials generated by alpha-function conductances with different reversal potentials.
+      There is a baseline at rest before synaptic activation.
+    </div>
+    <div class="psp-canvas-container">
+      <div class="mock-trace-note">Membrane potential vs time</div>
+      <canvas id="pspCanvas" width="450" height="250"></canvas>
+      <div class="note">
+        Solid line: Trace A; dashed line: Trace B. V<sub>rest</sub> = -70 mV.
+      </div>
+    </div>
+
+    <div style="margin-top: 8px;">
+      <label>7a. The depolarizing potential (Trace A) is best explained by:
+        <br>
+        <input type="radio" name="s2_psp_epsp" value="glu"> Glutamate acting at ionotropic receptors (EPSP)
+        <br>
+        <input type="radio" name="s2_psp_epsp" value="gaba"> GABA acting at ionotropic receptors (IPSP)
+      </label>
+      <br>
+      <label>7b. The hyperpolarizing potential (Trace B) is best explained by:
+        <br>
+        <input type="radio" name="s2_psp_ipsp" value="glu"> Glutamate acting at ionotropic receptors (EPSP)
+        <br>
+        <input type="radio" name="s2_psp_ipsp" value="gaba"> GABA acting at ionotropic receptors (IPSP)
+      </label>
+    </div>
+  </div>
+
+  <button onclick="checkSection('section2')">Check Section 2 Answers</button>
+  <div class="feedback" id="section2_feedback"></div>
+</section>
+
+<!-- ========== SECTION 3: Clinical Correlates & Monoamine Systems ========== -->
+<section class="section section-locked" id="section3">
+  <div class="section-header">
+    <h2>Section 3 – Clinical Correlates and Monoamine Systems</h2>
+    <span class="badge">Clinical & Systems</span>
+  </div>
+
+  <!-- Clinical Correlate: MG -->
+  <h3>Clinical Correlate 1 – Myasthenia Gravis</h3>
+  <div class="clinical-case">
+    A 32-year-old patient presents with fluctuating muscle weakness that worsens with repeated use, 
+    especially in eye and facial muscles. Neurologic exam shows ptosis that increases with sustained up-gaze.
+  </div>
+
+  <div class="question" id="s3_q1_container">
+    <p>1. In myasthenia gravis, antibodies are directed primarily against:</p>
+    <label><input type="radio" name="s3_q1" value="a"> A. Muscarinic ACh receptors</label>
+    <label><input type="radio" name="s3_q1" value="b"> B. Nicotinic ACh receptors at the neuromuscular junction</label>
+    <label><input type="radio" name="s3_q1" value="c"> C. Acetylcholinesterase</label>
+    <label><input type="radio" name="s3_q1" value="d"> D. VMAT2</label>
+  </div>
+
+  <div class="question" id="s3_q2_container">
+    <p>2. Which treatment strategy directly targets the underlying synaptic defect in myasthenia gravis?</p>
+    <label><input type="radio" name="s3_q2" value="a"> A. Block acetylcholinesterase to increase ACh in the cleft.</label>
+    <label><input type="radio" name="s3_q2" value="b"> B. Block nicotinic ACh receptors to reduce overexcitation.</label>
+    <label><input type="radio" name="s3_q2" value="c"> C. Inhibit VMAT2 to reduce ACh release.</label>
+    <label><input type="radio" name="s3_q2" value="d"> D. Activate GABA<sub>A</sub> receptors in muscle.</label>
+  </div>
+
+  <!-- Monoamine synthesis – DA vs NE identity -->
+  <h3>Monoamine Synthesis – What Defines a Dopamine vs Norepinephrine Neuron?</h3>
+  <div class="question" id="s3_q3_container">
+    <p>3. All catecholamines share a common precursor. Which amino acid is it?</p>
+    <label><input type="radio" name="s3_q3" value="a"> A. Tryptophan</label>
+    <label><input type="radio" name="s3_q3" value="b"> B. Tyrosine</label>
+    <label><input type="radio" name="s3_q3" value="c"> C. Glutamine</label>
+    <label><input type="radio" name="s3_q3" value="d"> D. Glycine</label>
+  </div>
+
+  <div class="question" id="s3_q4_container">
+    <p>4. Which enzyme is the <strong>rate-limiting step</strong> and key marker of catecholamine synthesis?</p>
+    <label><input type="radio" name="s3_q4" value="a"> A. DOPA decarboxylase</label>
+    <label><input type="radio" name="s3_q4" value="b"> B. Dopamine β-hydroxylase (DBH)</label>
+    <label><input type="radio" name="s3_q4" value="c"> C. Tyrosine hydroxylase (TH)</label>
+    <label><input type="radio" name="s3_q4" value="d"> D. Choline acetyltransferase (ChAT)</label>
+  </div>
+
+  <div class="question" id="s3_q5_container">
+    <p>5. A neuron expresses tyrosine hydroxylase (TH) but <strong>does not</strong> express dopamine β-hydroxylase (DBH). It primarily releases:</p>
+    <label><input type="radio" name="s3_q5" value="a"> A. Dopamine</label>
+    <label><input type="radio" name="s3_q5" value="b"> B. Norepinephrine</label>
+    <label><input type="radio" name="s3_q5" value="c"> C. Epinephrine</label>
+    <label><input type="radio" name="s3_q5" value="d"> D. Serotonin</label>
+  </div>
+
+  <div class="question" id="s3_q6_container">
+    <p>6. A neuron expresses tyrosine hydroxylase (TH) and dopamine β-hydroxylase (DBH) and converts dopamine to norepinephrine inside vesicles. This neuron is best classified as:</p>
+    <label><input type="radio" name="s3_q6" value="a"> A. Dopaminergic</label>
+    <label><input type="radio" name="s3_q6" value="b"> B. Noradrenergic</label>
+    <label><input type="radio" name="s3_q6" value="c"> C. Cholinergic</label>
+    <label><input type="radio" name="s3_q6" value="d"> D. Serotonergic</label>
+  </div>
+
+  <!-- Clinical Correlate: Parkinson's -->
+  <h3>Clinical Correlate 2 – Parkinson’s Disease</h3>
+  <div class="clinical-case">
+    A 70-year-old patient presents with a resting tremor, muscular rigidity, and difficulty initiating voluntary movements. 
+    Neuroimaging and pathology point toward degeneration of a specific monoaminergic pathway.
+  </div>
+
+  <div class="question" id="s3_q7_container">
+    <p>7. Which dopaminergic pathway is primarily affected in Parkinson’s disease?</p>
+    <label><input type="radio" name="s3_q7" value="a"> A. Meso-limbic pathway (VTA → nucleus accumbens)</label>
+    <label><input type="radio" name="s3_q7" value="b"> B. Meso-cortical pathway (VTA → prefrontal cortex)</label>
+    <label><input type="radio" name="s3_q7" value="c"> C. Nigro-striatal pathway (substantia nigra → dorsal striatum)</label>
+    <label><input type="radio" name="s3_q7" value="d"> D. Tuberoinfundibular pathway (hypothalamus → pituitary)</label>
+  </div>
+
+  <div class="question" id="s3_q8_container">
+    <p>8. What is the main pharmacological strategy for treating Parkinson’s disease, based on this pathway?</p>
+    <label><input type="radio" name="s3_q8" value="a"> A. Block serotonin reuptake with SSRIs.</label>
+    <label><input type="radio" name="s3_q8" value="b"> B. Provide a dopamine precursor (L-DOPA) to boost dopamine synthesis.</label>
+    <label><input type="radio" name="s3_q8" value="c"> C. Inhibit acetylcholinesterase in the basal ganglia.</label>
+    <label><input type="radio" name="s3_q8" value="d"> D. Administer a VMAT2 blocker.</label>
+  </div>
+
+  <!-- Monoamines and drugs -->
+  <h3>Monoamines and Drugs of Abuse</h3>
+  <p>
+    Monoamine neurotransmitters (dopamine, norepinephrine, serotonin, histamine) are synthesized from amino acid precursors, 
+    loaded into vesicles by <strong>VMAT2</strong>, and cleared by a combination of enzymatic breakdown 
+    (monoamine oxidase) and high-affinity reuptake transporters (DAT, NET, SERT).
+  </p>
+
+  <div class="question" id="s3_q9_container">
+    <p>9. A drug that globally disrupts the function of VMAT2 will primarily impair release of:</p>
+    <label><input type="radio" name="s3_q9" value="a"> A. Only dopamine</label>
+    <label><input type="radio" name="s3_q9" value="b"> B. Only glutamate</label>
+    <label><input type="radio" name="s3_q9" value="c"> C. All monoamines (dopamine, norepinephrine, serotonin, etc.)</label>
+    <label><input type="radio" name="s3_q9" value="d"> D. Only GABA</label>
+  </div>
+
+  <div class="question" id="s3_q10_container">
+    <p>10. Which statement best matches the action of a <strong>selective serotonin reuptake inhibitor (SSRI)</strong> used for depression?</p>
+    <label><input type="radio" name="s3_q10" value="a"> A. It blocks SERT, increasing serotonin levels in the synaptic cleft.</label>
+    <label><input type="radio" name="s3_q10" value="b"> B. It blocks DAT, increasing dopamine in the synaptic cleft.</label>
+    <label><input type="radio" name="s3_q10" value="c"> C. It activates VMAT2 to load more serotonin into vesicles.</label>
+    <label><input type="radio" name="s3_q10" value="d"> D. It inhibits monoamine oxidase to prevent dopamine breakdown only.</label>
+  </div>
+
+  <div class="question" id="s3_q11_container">
+    <p>11. Which drug of abuse primarily targets <strong>serotonergic receptors</strong> (especially 5-HT<sub>2A</sub>)?</p>
+    <label><input type="radio" name="s3_q11" value="a"> A. Cocaine</label>
+    <label><input type="radio" name="s3_q11" value="b"> B. MDMA (Ecstasy)</label>
+    <label><input type="radio" name="s3_q11" value="c"> C. Mushrooms (psilocybin)</label>
+    <label><input type="radio" name="s3_q11" value="d"> D. Amphetamine</label>
+  </div>
+
+   <!-- Image-based monoamine matching -->
+  <h3>Image Matching – Monoamine Structures</h3>
+  <div class="question" id="s3_image_match_container">
+    <p>12. Drag the correct label onto each image of a monoamine neurotransmitter.</p>
+    <div class="note">
+      Save <code>dopamine.png</code>, <code>norepinephrine.png</code>, and <code>serotonin.png</code> in the same folder as this HTML file (or in the same GitHub repo directory).
+    </div>
+
+    <div class="token-bank" id="monoTokenBank">
+      <div class="token" id="token_dopamine" draggable="true" data-token="dopamine" data-bank="monoTokenBank">
+        Dopamine
+      </div>
+      <div class="token" id="token_norepinephrine" draggable="true" data-token="norepinephrine" data-bank="monoTokenBank">
+        Norepinephrine
+      </div>
+      <div class="token" id="token_serotonin" draggable="true" data-token="serotonin" data-bank="monoTokenBank">
+        Serotonin
+      </div>
+    </div>
+
+    <div class="image-row" id="s3_img_ser_container">
+      <img class="neuroimage" src="serotonin.png" alt="Monoamine structure 1">
+      <div class="image-label-zone">
+        <span>Label for Image 1:</span>
+        <div class="dropzone" id="drop_s3_img_ser" data-input="s3_img_ser"></div>
+        <input type="hidden" id="s3_img_ser">
+      </div>
+    </div>
+
+    <div class="image-row" id="s3_img_ne_container">
+      <img class="neuroimage" src="norepinephrine.png" alt="Monoamine structure 2">
+      <div class="image-label-zone">
+        <span>Label for Image 2:</span>
+        <div class="dropzone" id="drop_s3_img_ne" data-input="s3_img_ne"></div>
+        <input type="hidden" id="s3_img_ne">
+      </div>
+    </div>
+
+    <div class="image-row" id="s3_img_da_container">
+      <img class="neuroimage" src="dopamine.png" alt="Monoamine structure 3">
+      <div class="image-label-zone">
+        <span>Label for Image 3:</span>
+        <div class="dropzone" id="drop_s3_img_da" data-input="s3_img_da"></div>
+        <input type="hidden" id="s3_img_da">
+      </div>
+    </div>
+
+  </div>
+
+  <button onclick="checkSection('section3')">Check Section 3 Answers</button>
+  <div class="feedback" id="section3_feedback"></div>
+</section>
+
+<div class="final-message" id="finalMessage">
+  You’ve completed all sections of the Neurotransmitter Systems activity. 
+  Make sure you can explain how synthesis, receptors, and clearance mechanisms
+  relate to the clinical examples we covered (MG, monoamine pathways in Parkinson’s, 
+  and monoamine-targeting drugs), and how glutamate and GABA shape EPSPs vs IPSPs.
+</div>
+
+<script>
+  // ---------- Quiz config ----------
+  const quizConfig = {
+    section1: {
+      questions: [
+        { id: 's1_q1', type: 'mc', answer: 'b' },
+        { id: 's1_q2', type: 'mc', answer: 'b' },
+             ]
+    },
+    section2: {
+      questions: [
+        {
+          id: 's2_q1',
+          type: 'text',
+          answers: ['glutamate']
+        },
+        {
+          id: 's2_q2',
+          type: 'text',
+          answers: ['gaba', 'γ-aminobutyric acid', 'gamma-aminobutyric acid']
+        },
+        { id: 's2_q3', type: 'mc', answer: 'c' },
+        { id: 's2_q4', type: 'mc', answer: 'b' },
+        {
+          id: 's2_q5',
+          type: 'text',
+          answers: ['choline acetyltransferase', 'chat']
+        },
+        // Drag-and-drop slots
+        { id: 's2_glu_syn', type: 'drop', answer: 'glutaminase' },
+        { id: 's2_glu_pack', type: 'drop', answer: 'vglut' },
+        { id: 's2_glu_clear', type: 'drop', answer: 'eaat' },
+        { id: 's2_gaba_syn', type: 'drop', answer: 'gad' },
+        { id: 's2_gaba_pack', type: 'drop', answer: 'vgat' },
+        { id: 's2_gaba_clear', type: 'drop', answer: 'gat' },
+        { id: 's2_ach_syn', type: 'drop', answer: 'chat' },
+        { id: 's2_ach_pack', type: 'drop', answer: 'vacht' },
+        { id: 's2_ach_clear', type: 'drop', answer: 'ache' },
+        { id: 's2_mono_syn', type: 'drop', answer: 'th' },
+        { id: 's2_mono_pack', type: 'drop', answer: 'vmat2' },
+        { id: 's2_mono_clear', type: 'drop', answer: 'reuptake' },
+        // PSP matching
+        { id: 's2_psp_epsp', type: 'mc', answer: 'glu' },
+        { id: 's2_psp_ipsp', type: 'mc', answer: 'gaba' }
+      ]
+    },
+    section3: {
+      questions: [
+        { id: 's3_q1', type: 'mc', answer: 'b' },
+        { id: 's3_q2', type: 'mc', answer: 'a' },
+        { id: 's3_q3', type: 'mc', answer: 'b' },
+        { id: 's3_q4', type: 'mc', answer: 'c' },
+        { id: 's3_q5', type: 'mc', answer: 'a' },
+        { id: 's3_q6', type: 'mc', answer: 'b' },
+        { id: 's3_q7', type: 'mc', answer: 'c' },
+        { id: 's3_q8', type: 'mc', answer: 'b' },
+        { id: 's3_q9', type: 'mc', answer: 'c' },
+        { id: 's3_q10', type: 'mc', answer: 'a' },
+        { id: 's3_q11', type: 'mc', answer: 'c' },
+        { id: 's3_match_da_source', type: 'select', answer: 'da_vta_snc_cortex_striatum' },
+        { id: 's3_match_ne_source', type: 'select', answer: 'ne_lc_widespread' },
+        { id: 's3_match_5ht_source', type: 'select', answer: '5ht_raphe_widespread' },
+        { id: 's3_match_ach_source', type: 'select', answer: 'ach_basalis_septum_cortex' },
+        { id: 's3_match_hist_source', type: 'select', answer: 'hist_hypothalamus_arousal' },
+        // Image-based monoamine matching
+        { id: 's3_img_ser', type: 'drop', answer: 'serotonin' },
+        { id: 's3_img_ne', type: 'drop', answer: 'norepinephrine' },
+        { id: 's3_img_da', type: 'drop', answer: 'dopamine' }
+      ]
+    }
+  };
+
+  function normalize(text) {
+    return text.toLowerCase().trim();
+  }
+
+  function checkSection(sectionId) {
+    const config = quizConfig[sectionId];
+    const feedbackEl = document.getElementById(sectionId + '_feedback');
+
+    // Clear previous state
+    config.questions.forEach(q => {
+      const container = document.getElementById(q.id + '_container');
+      if (container) {
+        container.classList.remove('incorrect', 'correct');
+      }
+    });
+    feedbackEl.textContent = '';
+    feedbackEl.classList.remove('success', 'error');
+
+    let hasIncorrect = false;
+
+    config.questions.forEach(q => {
+      let correct = false;
+
+      if (q.type === 'mc') {
+        const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+        if (selected && selected.value === q.answer) {
+          correct = true;
+        }
+      } else if (q.type === 'text') {
+        const inputEl = document.getElementById(q.id);
+        if (inputEl) {
+          const val = normalize(inputEl.value);
+          const acceptable = q.answers.map(a => normalize(a));
+          if (acceptable.includes(val)) {
+            correct = true;
+          }
+        }
+      } else if (q.type === 'select') {
+        const sel = document.getElementById(q.id);
+        if (sel && sel.value === q.answer) {
+          correct = true;
+        }
+      } else if (q.type === 'drop') {
+        const hiddenEl = document.getElementById(q.id);
+        if (hiddenEl && hiddenEl.value === q.answer) {
+          correct = true;
+        }
+      }
+
+      const container = document.getElementById(q.id + '_container');
+      if (container) {
+        if (correct) {
+          container.classList.add('correct');
+        } else {
+          container.classList.add('incorrect');
+          hasIncorrect = true;
+        }
+      }
+    });
+
+    if (!hasIncorrect) {
+      feedbackEl.textContent = 'All answers correct! This section is complete.';
+      feedbackEl.classList.add('success');
+      unlockNextSection(sectionId);
+    } else {
+      feedbackEl.textContent =
+        'Some answers are incorrect. Incorrect questions are highlighted in red.';
+      feedbackEl.classList.add('error');
+    }
+  }
+
+  function unlockNextSection(currentId) {
+    const current = document.getElementById(currentId);
+    const nextId = current.getAttribute('data-next');
+
+    // Disable the button for the completed section
+    const button = current.querySelector('button');
+    if (button) {
+      button.disabled = true;
+    }
+
+    if (nextId) {
+      const next = document.getElementById(nextId);
+      if (next) {
+        next.classList.remove('section-locked');
+        next.classList.add('active');
+
+        const progressEl = document.getElementById('progressText');
+        if (nextId === 'section2') {
+          progressEl.textContent = 'Progress: Sections 1 and 2 unlocked (2 of 3).';
+        } else if (nextId === 'section3') {
+          progressEl.textContent = 'Progress: All 3 sections unlocked.';
+        }
+        next.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      const finalMsg = document.getElementById('finalMessage');
+      finalMsg.style.display = 'block';
+      const progressEl = document.getElementById('progressText');
+      progressEl.textContent = 'Progress: All sections completed.';
+      finalMsg.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  // ---------- Drag and Drop ----------
+  let draggedTokenId = null;
+  let tokenOriginParentId = null;
+
+  function initDragAndDrop() {
+    const tokens = document.querySelectorAll('.token');
+    tokens.forEach(token => {
+      token.addEventListener('dragstart', onTokenDragStart);
+    });
+
+    const dropzones = document.querySelectorAll('.dropzone, .token-bank');
+    dropzones.forEach(zone => {
+      zone.addEventListener('dragover', onDragOver);
+      zone.addEventListener('dragleave', onDragLeave);
+      zone.addEventListener('drop', onDrop);
+    });
+  }
+
+  function onTokenDragStart(ev) {
+    draggedTokenId = this.id;
+    tokenOriginParentId = this.parentElement.id;
+    ev.dataTransfer.setData('text/plain', this.id);
+  }
+
+  function onDragOver(ev) {
+    ev.preventDefault();
+    this.classList.add('over');
+  }
+
+  function onDragLeave(ev) {
+    this.classList.remove('over');
+  }
+
+  function onDrop(ev) {
+    ev.preventDefault();
+    this.classList.remove('over');
+    const tokenId = ev.dataTransfer.getData('text/plain');
+    const token = document.getElementById(tokenId);
+    if (!token) return;
+
+    const target = this;
+
+    // Dropping into a word bank (any bank)
+    if (target.classList.contains('token-bank')) {
+      // If origin was a dropzone, clear its hidden input
+      const origin = document.getElementById(tokenOriginParentId);
+      if (origin && origin.classList.contains('dropzone')) {
+        const inputId = origin.dataset.input;
+        if (inputId) {
+          const hidden = document.getElementById(inputId);
+          if (hidden) hidden.value = '';
+        }
+      }
+      target.appendChild(token);
+      return;
+    }
+
+    // Dropping into a dropzone
+    if (target.classList.contains('dropzone')) {
+      // If dropzone already has a token, return that token to its home bank
+      const existingToken = target.querySelector('.token');
+      if (existingToken) {
+        const bankId = existingToken.dataset.bank;
+        if (bankId) {
+          const bank = document.getElementById(bankId);
+          if (bank) bank.appendChild(existingToken);
+        }
+      }
+
+      // Move dragged token into this dropzone
+      target.appendChild(token);
+
+      // Update hidden input associated with this dropzone
+      const inputId = target.dataset.input;
+      if (inputId) {
+        const hidden = document.getElementById(inputId);
+        if (hidden) {
+          hidden.value = token.dataset.token;
+        }
+      }
+    }
+  }
+
+  // ---------- PSP Graph (alpha-function EPSP and IPSP, with baseline) ----------
+  function drawPSPs() {
+    const canvas = document.getElementById('pspCanvas');
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const Vrest = -70;
+    const Eepsp = 0;
+    const Eipsp = -90;
+    const tStart = 0;   // ms
+    const tEnd = 120;   // ms
+    const dt = 0.5;     // ms
+    const tau = 10;     // ms
+    const tOnset = 20;  // ms (baseline before this)
+    const gMax = 1;     // arbitrary
+    const scale = 0.3;  // scales PSP amplitude
+
+    const times = [];
+    const vEPSP = [];
+    const vIPSP = [];
+
+    function alpha(tRel, tau) {
+      if (tRel < 0) return 0;
+      const x = tRel / tau;
+      return x * Math.exp(1 - x);
+    }
+
+    for (let t = tStart; t <= tEnd; t += dt) {
+      times.push(t);
+      const g = gMax * alpha(t - tOnset, tau);
+      const epsp = Vrest + scale * g * (Eepsp - Vrest);
+      const ipsp = Vrest + scale * g * (Eipsp - Vrest);
+      vEPSP.push(epsp);
+      vIPSP.push(ipsp);
+    }
+
+    const allV = vEPSP.concat(vIPSP);
+    let vMin = Math.min(...allV);
+    let vMax = Math.max(...allV);
+    vMin -= 5;
+    vMax += 5;
+
+    const marginLeft = 50;
+    const marginRight = 10;
+    const marginTop = 20;
+    const marginBottom = 30;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // Axes
+    ctx.beginPath();
+    ctx.moveTo(marginLeft, height - marginBottom);
+    ctx.lineTo(width - marginRight, height - marginBottom);
+    ctx.moveTo(marginLeft, marginTop);
+    ctx.lineTo(marginLeft, height - marginBottom);
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.font = '12px Arial';
+    ctx.fillText('Time (ms)', width / 2 - 25, height - 5);
+    ctx.save();
+    ctx.translate(15, height / 2 + 15);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Membrane potential (mV)', 0, 0);
+    ctx.restore();
+
+    function toCanvas(t, V) {
+      const x = marginLeft +
+        ((t - tStart) / (tEnd - tStart)) * (width - marginLeft - marginRight);
+      const y = marginTop +
+        (1 - (V - vMin) / (vMax - vMin)) * (height - marginTop - marginBottom);
+      return [x, y];
+    }
+
+    // Baseline at Vrest
+    const [x0, yRest] = toCanvas(tStart, Vrest);
+    const [x1, yRest2] = toCanvas(tEnd, Vrest);
+    ctx.beginPath();
+    ctx.moveTo(x0, yRest);
+    ctx.lineTo(x1, yRest2);
+    ctx.strokeStyle = '#aaa';
+    ctx.setLineDash([3, 3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Trace A (EPSP-like, solid)
+    ctx.beginPath();
+    vEPSP.forEach((v, i) => {
+      const t = times[i];
+      const [x, y] = toCanvas(t, v);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = '#1967d2';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    ctx.stroke();
+
+    // Trace B (IPSP-like, dashed)
+    ctx.beginPath();
+    vIPSP.forEach((v, i) => {
+      const t = times[i];
+      const [x, y] = toCanvas(t, v);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = '#d22';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.stroke();
+
+    // Legend without EPSP/IPSP labels
+    ctx.setLineDash([]);
+    ctx.font = '11px Arial';
+    // Trace A
+    ctx.beginPath();
+    ctx.moveTo(width - 150, marginTop + 10);
+    ctx.lineTo(width - 120, marginTop + 10);
+    ctx.strokeStyle = '#1967d2';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillText('Trace A (solid)', width - 145, marginTop + 25);
+    // Trace B
+    ctx.beginPath();
+    ctx.setLineDash([6, 4]);
+    ctx.moveTo(width - 150, marginTop + 40);
+    ctx.lineTo(width - 120, marginTop + 40);
+    ctx.strokeStyle = '#d22';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillText('Trace B (dashed)', width - 145, marginTop + 55);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initDragAndDrop();
+    drawPSPs();
+  });
+</script>
+
+</body>
+</html>

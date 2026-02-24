@@ -579,7 +579,7 @@
       shortLabel: "Vesicle filling",
       description:
         "Newly formed synaptic vesicles are filled with neurotransmitter while they reside in the reserve pool away from the active zone. A proton pump (V-ATPase) builds an H⁺ gradient across the vesicle membrane, and vesicular transporters use this gradient to concentrate neurotransmitter into the vesicle.",
-      proteins: ["Vesicular transporters"],
+      proteins: ["Vesicular transporters", "Vacuolar H⁺ ATPase"],
       keyPoint:
         "Vesicles are loaded with neurotransmitter by vesicular transporters before they dock at the active zone."
     },
@@ -652,6 +652,12 @@
       name: "Vesicular transporters",
       description: "Use the H⁺ gradient in the vesicle to concentrate neurotransmitter into synaptic vesicles.",
       stepIndex: 0 // step1: vesicle filling
+    },
+    {
+      id: "prot_vatpase",
+      name: "Vacuolar H⁺ ATPase",
+      description: "Vacuolar proton pump that uses ATP hydrolysis to build the H⁺ gradient across the vesicle membrane.",
+      stepIndex: 0 // also vesicle filling
     },
     {
       id: "prot_syntaxin",
@@ -969,18 +975,7 @@
       card.classList.remove("dragging");
     });
 
-    card.addEventListener("click", () => {
-      const proteinId = card.dataset.proteinId;
-      const protein = proteins.find((p) => p.id === proteinId);
-      if (!protein) return;
-
-      const step = steps[protein.stepIndex];
-      let message = protein.name + ":\n" + protein.description;
-      if (step) {
-        message += "\n\nMain step: " + step.shortLabel + " (\"" + step.title + "\")";
-      }
-      alert(message);
-    });
+    // CLICK HANDLER REMOVED to avoid giving away the correct step
   }
 
   function renderProteinSteps() {

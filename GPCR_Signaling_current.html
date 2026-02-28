@@ -627,8 +627,6 @@
         <span class="arrow-label">opened by βγ to hyperpolarize</span>
       </div>
       <p class="small-note">
-        Hint: G<sub>i</sub> <em>inhibits</em> adenylyl cyclase (↓ cAMP, ↓ PKA) and often activates GIRK channels to reduce excitability.
-      </p>
     </div>
 
     <div class="word-bank">
@@ -705,10 +703,6 @@
           <span class="dropzone" data-answer="Ca2+ release from ER"></span>
         </div>
       </div>
-
-      <p class="small-note">
-        Hint: G<sub>q</sub> activation results in two parallel pathways - one activating a kinase and one triggering Ca<sup>2+</sup> release.
-      </p>
     </div>
 
     <div class="word-bank">
@@ -1036,7 +1030,7 @@
           Gαs activation of PKA
         </label>
         <label><input type="radio" name="fq4" value="b">
-          Gαi βγ subunits acting on GIRK channels
+          Gαi βγ subunits acting directly on GIRK channels
         </label>
         <label><input type="radio" name="fq4" value="c">
           Gαq activation of PLCβ
@@ -1049,13 +1043,13 @@
 
     <!-- MC Q5 -->
     <div class="question-block" data-question-id="fq5">
-      <p>5. RGS (Regulator of G-protein Signaling) proteins terminate GPCR signaling primarily by:</p>
+      <p>5. RGS proteins terminate GPCR signaling primarily by:</p>
       <div class="options">
         <label><input type="radio" name="fq5" value="a">
           Phosphorylating the GPCR so that β-arrestin can bind.
         </label>
         <label><input type="radio" name="fq5" value="b">
-          Accelerating the intrinsic GTPase activity of Gα, converting GTP to GDP faster.
+          Accelerating the conversion of GTP to GDP in the G-alpha subunit.
         </label>
         <label><input type="radio" name="fq5" value="c">
           Dephosphorylating PKA and PKC.
@@ -1074,13 +1068,13 @@
           Enhanced coupling to Gαs and stronger cAMP production.
         </label>
         <label><input type="radio" name="fq6" value="b">
-          Receptor desensitization and internalization, reducing G-protein signaling.
+          GPCR receptor desensitization and internalization.
         </label>
         <label><input type="radio" name="fq6" value="c">
-          Immediate opening of ligand-gated ion channels.
+          Activation of GIRK channels.
         </label>
         <label><input type="radio" name="fq6" value="d">
-          Activation of voltage-gated Na<sup>+</sup> channels.
+          Accelerating the conversion of GTP-bound to GDP-bound alpha subunits.
         </label>
       </div>
     </div>
@@ -1091,7 +1085,6 @@
         7. <strong>Fill in the blank:</strong> G<sub>s</sub>-coupled receptors generally
         <em>________</em> adenylyl cyclase activity.
       </p>
-      <p class="small-note">Answer with a single word such as "stimulate", "activate", or "increase".</p>
       <input type="text" class="final-fill-input" data-type="fill" data-answers="stimulate|stimulates|activate|activates|increase|increases" />
     </div>
 
@@ -1115,7 +1108,7 @@
 
     <!-- MC Q10 -->
     <div class="question-block" data-question-id="fq10">
-      <p>10. Which combination best matches a G<sub>q</sub> pathway component with its <em>direct</em> downstream effect?</p>
+      <p>10. Which of the following is associated with G<sub>q</sub> activation?</p>
       <div class="options">
         <label><input type="radio" name="fq10" value="a">
           IP<sub>3</sub> → opens voltage-gated Na<sup>+</sup> channels
@@ -1426,7 +1419,7 @@
     const mapping = {
       'Receptor phosphorylation/β-arrestin recruitment': 'gpcr',
       'Receptor internalization': 'gpcr',
-      'Agonist unbinding ': 'gpcr',
+      'Agonist unbinding': 'gpcr',
       'RGS proteins': 'gprotein',
       'Protein phosphatases': 'effector'
     };

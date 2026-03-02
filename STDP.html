@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>STDP Timing Activity</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    header {
+      background: #304a8a;
+      color: white;
+      padding: 16px 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    main {
+      padding: 20px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      padding: 16px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      color: #304a8a;
+      font-size: 1.1rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .slider-row {
+      margin-bottom: 16px;
+    }
+
+    .slider-value {
+      font-size: 0.85rem;
+      color: #444;
+      margin-top: 4px;
+    }
+
+    canvas {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .outputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    #summaryBox {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-top: 12px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-right: 6px;
+      border: 1px solid #ccc;
+      background: #f8f8f8;
+    }
+
+    .tag.ltp {
+      border-color: #1b7f3b;
+      background: #e5f5ea;
+      color: #1b7f3b;
+    }
+
+    .tag.ltd {
+      border-color: #b34700;
+      background: #ffe8d9;
+      color: #b34700;
+    }
+
+    .tag.none {
+      border-color: #777;
+      background: #f0f0f0;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>Spike Timing–Dependent Plasticity (STDP)</h1>
+</header>
+
+<main>
+  <div class="layout">
+    <!-- Controls -->
+    <section class="panel">
+      <h2>Adjust Timing & Pairings</h2>
+
+      <div class="slider-row">
+        <label for="dtSlider">Pre–post interval (Δt, ms)</label>
+        <input id="dtSlider" type="range" min="-50" max="50" step="1" value="10">
+        <div class="slider-value">
+          Δt = <span id="dtValue">10</span> ms
+          (<span id="dtInterpretation">pre before post</span>)
+        </div>
+      </div>
+
+      <div class="slider-row">
+        <label for="pairingsSlider">Number of pairings</label>
+        <input id="pairingsSlider" type="range" min="1" max="100" step="1" value="30">
+        <div class="slider-value">Pairings = <span id="pairingsValue">30</span></div>
+      </div>
+    </section>
+
+    <!-- Output -->
+    <section class="panel">
+      <h2>Visual Output</h2>
+
+      <div class="outputs">
+        <canvas id="stdpCanvas" width="380" height="220"></canvas>
+        <canvas id="epscCanvas" width="380" height="220"></canvas>
+      </div>
+
+      <div id="summaryBox"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+  const dtSlider = document.getElementById("dtSlider");
+  const dtValue = document.getElementById("dtValue");
+  const dtInterpretation = document.getElementById("dtInterpretation");
+
+  const pairingsSlider = document.getElementById("pairingsSlider");
+  const pairingsValue = document.getElementById("pairingsValue");
+
+  const stdpCanvas = document.getElementById("stdpCanvas");
+  const epscCanvas = document.getElementById("epscCanvas");
+
+  const summaryBox = document.getElementById("summaryBox");
+
+  const stdpCtx = stdpCanvas.getContext("2d");
+  const epscCtx = epscCanvas.getContext("2d");
+
+  // STDP parameters
+  const A_plus = 1.0;
+  const A_minus = 0.7;
+  const tau_plus = 20.0;
+  const tau_minus = 20.0;
+
+  function interpTimingText(dt) {
+    if (dt > 0) return "pre before post (Hebbian)";
+    if (dt < 0) return "post before pre (anti-Hebbian)";
+    return "simultaneous";
+  }
+
+  function computeSTDPDeltaW(dt) {
+    if (dt > 0) return A_plus * Math.exp(-dt / tau_plus);
+    if (dt < 0) return -A_minus * Math.exp(dt / tau_minus);
+    return A_plus;
+  }
+
+  function drawSTDPWindow(currentDt, deltaWSingle) {
+    const ctx = stdpCtx;
+    const w = stdpCanvas.width;
+    const h = stdpCanvas.height;
+    ctx.clearRect(0,0,w,h);
+
+    const ml = 40, mr = 10, mt = 10, mb = 40;
+
+    // Axes
+    ctx.strokeStyle = "#000";
+    ctx.beginPath();
+    ctx.moveTo(ml, h-mb);
+    ctx.lineTo(w-mr, h-mb);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(ml, mt);
+    ctx.lineTo(ml, h-mb);
+    ctx.stroke();
+
+    ctx.fillStyle="#000";
+    ctx.font="11px Arial";
+    ctx.fillText("Δt (ms)", w/2-20, h-10);
+
+    ctx.save();
+    ctx.translate(12,h/2+20);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillText("Δw (a.u.)",0,0);
+    ctx.restore();
+
+    const xZero = ml + (50/100)*(w-ml-mr);
+    const yZero = (h-mb+mt)/2;
+
+    ctx.setLineDash([4,3]);
+    ctx.strokeStyle="#888";
+    ctx.beginPath();
+    ctx.moveTo(xZero,mt);
+    ctx.lineTo(xZero,h-mb);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(ml,yZero);
+    ctx.lineTo(w-mr,yZero);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const dWMax = A_plus;
+    const dWMin = -A_minus;
+
+    ctx.strokeStyle="#304a8a";
+    ctx.lineWidth=2;
+    ctx.beginPath();
+
+    let first=true;
+    for(let dt=-50; dt<=50; dt++){
+      const dw=computeSTDPDeltaW(dt);
+      const x = ml + (dt+50)/100*(w-ml-mr);
+      const yNorm = (dw-dWMin)/(dWMax-dWMin);
+      const y = (1-yNorm)*(h-mb-mt)+mt;
+
+      if(first){ctx.moveTo(x,y); first=false;}
+      else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Mark current point
+    const currX = ml + (currentDt+50)/100*(w-ml-mr);
+    const currYNorm = (deltaWSingle-dWMin)/(dWMax-dWMin);
+    const currY = (1-currYNorm)*(h-mb-mt)+mt;
+
+    ctx.fillStyle="#b30000";
+    ctx.beginPath();
+    ctx.arc(currX,currY,4,0,2*Math.PI);
+    ctx.fill();
+  }
+
+  function drawEPSC(weight){
+    const ctx=epscCtx;
+    const w=epscCanvas.width;
+    const h=epscCanvas.height;
+    ctx.clearRect(0,0,w,h);
+
+    const ml=40,mr=10,mt=10,mb=40;
+
+    ctx.strokeStyle="#000";
+    ctx.beginPath(); ctx.moveTo(ml,h-mb); ctx.lineTo(w-mr,h-mb); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ml,mt); ctx.lineTo(ml,h-mb); ctx.stroke();
+
+    ctx.fillStyle="#000"; ctx.font="11px Arial";
+    ctx.fillText("Time (ms)",w/2-20,h-10);
+    ctx.save(); ctx.translate(12,h/2+20); ctx.rotate(-Math.PI/2);
+    ctx.fillText("EPSC (a.u.)",0,0);
+    ctx.restore();
+
+    const onset=40, tauS=10, tMax=150;
+
+    function epsc(t,g){ return t<onset?0:-g*Math.exp(-(t-onset)/tauS); }
+
+    let maxAbs=1;
+    for(let t=0;t<=tMax;t++){
+      maxAbs=Math.max(maxAbs,Math.abs(epsc(t,1)),Math.abs(epsc(t,weight)));
+    }
+
+    const pw=w-ml-mr, ph=h-mt-mb;
+    function tToX(t){return ml+(t/tMax)*pw;}
+    function vToY(v){return mt+((v/(-maxAbs)))*ph;}
+
+    // Baseline (dashed)
+    ctx.setLineDash([4,3]);
+    ctx.strokeStyle="#999";
+    ctx.beginPath();
+    let first=true;
+    for(let t=0;t<=tMax;t++){
+      const v=epsc(t,1);
+      if(first){ctx.moveTo(tToX(t),vToY(v)); first=false;}
+      else ctx.lineTo(tToX(t),vToY(v));
+    }
+    ctx.stroke();
+
+    // Plasticity-modified
+    ctx.setLineDash([]);
+    ctx.strokeStyle="#304a8a";
+    ctx.lineWidth=2;
+    ctx.beginPath(); first=true;
+    for(let t=0;t<=tMax;t++){
+      const v=epsc(t,weight);
+      if(first){ctx.moveTo(tToX(t),vToY(v)); first=false;}
+      else ctx.lineTo(tToX(t),vToY(v));
+    }
+    ctx.stroke();
+  }
+
+  function updateSummary(dt, pairings, deltaWSingle, deltaWTotal, weight){
+    let tag, label;
+    if(deltaWTotal > 0.02) { label="LTP"; tag="ltp"; }
+    else if(deltaWTotal < -0.02){ label="LTD"; tag="ltd"; }
+    else { label="No net plasticity"; tag="none"; }
+
+    summaryBox.innerHTML = `
+      <h3>Summary</h3>
+      <span class="tag ${tag}">${label}</span>
+      <p><strong>Timing:</strong> Δt = ${dt} ms (${interpTimingText(dt)})<br>
+         <strong>Pairings:</strong> ${pairings}</p>
+      <p><strong>STDP (single pairing):</strong> Δw ≈ ${deltaWSingle.toFixed(2)}<br>
+         <strong>Accumulated Δw:</strong> ${deltaWTotal.toFixed(2)}<br>
+         <strong>New synaptic weight:</strong> w = ${weight.toFixed(2)}</p>
+    `;
+  }
+
+  function updateAll(){
+    const dt=parseInt(dtSlider.value);
+    const pairings=parseInt(pairingsSlider.value);
+
+    dtValue.textContent = dt;
+    dtInterpretation.textContent = interpTimingText(dt);
+    pairingsValue.textContent = pairings;
+
+    const deltaWSingle = computeSTDPDeltaW(dt);
+    const deltaWTotal = deltaWSingle * (pairings/20.0);
+
+    let weight = 1.0 + deltaWTotal;
+    if(weight < 0.1) weight=0.1;
+
+    drawSTDPWindow(dt,deltaWSingle);
+    drawEPSC(weight);
+    updateSummary(dt, pairings, deltaWSingle, deltaWTotal, weight);
+  }
+
+  dtSlider.addEventListener("input", updateAll);
+  pairingsSlider.addEventListener("input", updateAll);
+
+  updateAll();
+</script>
+
+</body>
+</html>

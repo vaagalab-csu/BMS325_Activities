@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Synaptic Transmission Simulator (Timing + Pharmacology)</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --ink:#111827;
+      --muted:#6b7280;
+      --accent:#2f4a8a;
+      --accent2:#0f766e;
+      --border:#e5e7eb;
+      --shadow:0 2px 10px rgba(0,0,0,.08);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);}
+    header{background:var(--accent);color:white;padding:18px 22px;}
+    header h1{margin:0;font-size:1.35rem;letter-spacing:.2px;}
+    header p{margin:6px 0 0;opacity:.92;max-width:1200px;line-height:1.4;font-size:1rem;}
+    main{max-width:1320px;margin:0 auto;padding:18px 18px 30px;}
+
+    .tabs{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin:0 0 12px;
+    }
+    .tab{
+      border:1px solid var(--border);
+      background:white;
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:1rem;
+      user-select:none;
+    }
+    .tab[aria-selected="true"]{
+      border-color:rgba(47,74,138,.35);
+      box-shadow:0 0 0 3px rgba(47,74,138,.12);
+      background:#f3f6ff;
+      font-weight:700;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr 1.35fr;
+      gap:14px;
+      align-items:start;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .card h2{margin:0 0 10px;font-size:1.15rem;}
+    .sub{color:var(--muted);font-size:1rem;margin:-2px 0 10px;line-height:1.45;}
+
+    /* Controls */
+    .controls{display:grid;grid-template-columns:1fr;gap:12px;margin-top:10px;}
+    .control{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fbfcff;}
+    .control label{
+      display:flex;justify-content:space-between;gap:12px;
+      font-size:1rem;margin-bottom:8px;color:#111827;
+    }
+    .control input[type="range"]{width:100%}
+    .tiny{font-size:.92rem;color:var(--muted);line-height:1.35;}
+
+    .pillbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+    .pill{
+      border:1px solid var(--border);
+      background:white;
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:1rem;
+      cursor:pointer;
+      user-select:none;
+      display:flex;align-items:center;gap:10px;
+    }
+    .pill .dot{width:12px;height:12px;border-radius:50%;background:#cbd5e1;border:1px solid #94a3b8;}
+    .pill[aria-pressed="true"]{
+      border-color:rgba(47,74,138,.35);
+      box-shadow:0 0 0 3px rgba(47,74,138,.12);
+      background:#f3f6ff;
+    }
+    .pill[aria-pressed="true"] .dot{
+      background:var(--accent2);border-color:rgba(15,118,110,.7);
+    }
+
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      align-items:center;
+      padding:10px 12px;
+      border:1px dashed var(--border);
+      border-radius:12px;
+      background:#fff;
+      margin-top:10px;
+      font-size:1rem;
+    }
+    .kv code{font-family:var(--mono);font-size:1rem;color:#111827;}
+
+    /* Schematic + plots */
+    svg{width:100%; height:auto; display:block;}
+    .plots{display:grid;grid-template-columns:1fr;gap:12px;}
+    canvas{
+      width:100%;
+      height:190px; /* larger */
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:white;
+    }
+    #cI{height:220px;}
+    .plotTitle{
+      display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+      margin:0 0 6px;
+    }
+    .plotTitle strong{font-size:1.02rem}
+    .plotTitle span{font-size:.92rem;color:var(--muted);font-family:var(--mono);}
+
+    .playbar{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+      margin-top:10px;padding-top:10px;border-top:1px solid var(--border);
+    }
+    button{
+      border:1px solid var(--border);
+      background:white;
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:1rem;
+    }
+    button.primary{background:var(--accent);color:white;border-color:rgba(0,0,0,.05);}
+    button:disabled{opacity:.55;cursor:not-allowed}
+
+    /* Page 2 quiz */
+    .quizWrap{display:grid;grid-template-columns: 1.2fr .8fr; gap:14px; align-items:start;}
+    .q{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+      background:#fff;
+      margin-top:12px;
+    }
+    .q h3{margin:0 0 10px;font-size:1.05rem;}
+    .opt{display:flex;gap:10px;align-items:flex-start;margin:8px 0;font-size:1rem;line-height:1.3;}
+    textarea{
+      width:100%;
+      min-height:90px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:10px 12px;
+      font-family:var(--sans);
+      font-size:1rem;
+    }
+    .feedback{
+      margin-top:10px;
+      font-size:1rem;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#fbfcff;
+      line-height:1.35;
+      white-space:pre-wrap;
+    }
+    .good{border-color:rgba(15,118,110,.35);background:#ecfdf5}
+    .bad{border-color:rgba(185,28,28,.35);background:#fef2f2}
+    .rubric{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+      background:#fff;
+    }
+    .rubric h2{margin:0 0 8px;}
+    .rubric ul{margin:8px 0 0; padding-left:18px; color:var(--muted); line-height:1.4;}
+    .hidden{display:none !important;}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Synaptic Transmission Simulator</h1>
+  <p>
+   Developed by Dr. Christopher Vaaga
+  </p>
+</header>
+
+<main>
+  <div class="tabs" role="tablist" aria-label="Pages">
+    <div class="tab" id="tabSim" role="tab" tabindex="0" aria-selected="true">Page 1 — Simulation</div>
+    <div class="tab" id="tabQuiz" role="tab" tabindex="0" aria-selected="false">Page 2 — Quiz</div>
+  </div>
+
+  <!-- PAGE 1 -->
+  <section id="pageSim">
+    <div class="grid">
+      <!-- Left -->
+      <section class="card">
+        <h2>Schematic + Controls</h2>
+        <div class="sub">
+         Drag the time cursor to scrub through events.
+          Traces are plotted progressively in “real time” as the animation advances.
+        </div>
+
+        <!-- Aligned schematic (larger) -->
+        <svg id="synapseSVG" viewBox="0 0 860 520" role="img" aria-label="Simplified synapse schematic">
+          <defs>
+            <linearGradient id="memGrad" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#e8eefc"/>
+              <stop offset="1" stop-color="#f8fbff"/>
+            </linearGradient>
+            <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,.18)"/>
+            </filter>
+          </defs>
+
+          <!-- Presynaptic terminal (top) -->
+          <rect x="180" y="40" width="500" height="160" rx="22" fill="url(#memGrad)" stroke="#dbe3f5"/>
+          <text x="208" y="78" fill="#111827" font-size="22" font-weight="800">Presynaptic terminal</text>
+          <line x1="200" y1="165" x2="660" y2="165" stroke="#111827" stroke-width="5" opacity="0.65"/>
+
+	<!-- AP arriving label (animated instead of presynaptic highlight circle) -->
+	<text id="apText"
+ 	     x="520" y="96"
+ 	     font-size="22"
+   	   font-weight="800"
+   	   fill="#ef4444"
+  	    opacity="0">AP Arriving</text>
+
+          <!-- VGCCs at center, aligned above postsynaptic receptors -->
+          <g id="vgcc">
+            <rect x="412" y="136" width="34" height="58" rx="9" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+            <rect x="458" y="136" width="34" height="58" rx="9" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+            <text x="408" y="126" font-size="14" fill="#64748b">VGCCs</text>
+          </g>
+
+          <!-- Vesicle near active zone -->
+          <g id="vesicle" filter="url(#softShadow)">
+            <circle cx="310" cy="132" r="30" fill="#fff" stroke="#94a3b8" stroke-width="2.5"/>
+            <circle cx="298" cy="124" r="3.5" fill="#94a3b8"/>
+            <circle cx="316" cy="136" r="3.5" fill="#94a3b8"/>
+            <circle cx="330" cy="120" r="3.5" fill="#94a3b8"/>
+            <text x="254" y="196" font-size="14" fill="#64748b">synaptic vesicle</text>
+          </g>
+
+          <!-- Fusion site -->
+          <g id="fusionSite">
+            <circle cx="310" cy="165" r="12" fill="none" stroke="#0f766e" stroke-width="4" opacity="0.15"/>
+            <path d="M292 165 C300 152, 320 152, 328 165" fill="none" stroke="#0f766e" stroke-width="4" opacity="0.15"/>
+            <text x="236" y="232" font-size="14" fill="#64748b">fusion / release</text>
+          </g>
+
+          <!-- Synaptic cleft (middle band) -->
+          <rect x="80" y="225" width="700" height="78" rx="18" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"/>
+          <text x="110" y="272" font-size="18" fill="#334155" font-weight="800">Synaptic cleft</text>
+
+          <!-- Glutamate dots -->
+          <g id="glutDots" opacity="0.1">
+            <circle cx="340" cy="265" r="5" fill="#7c3aed"/>
+            <circle cx="380" cy="278" r="5" fill="#7c3aed"/>
+            <circle cx="420" cy="258" r="5" fill="#7c3aed"/>
+            <circle cx="460" cy="281" r="5" fill="#7c3aed"/>
+            <circle cx="500" cy="263" r="5" fill="#7c3aed"/>
+            <circle cx="540" cy="275" r="5" fill="#7c3aed"/>
+            <text x="580" y="276" font-size="14" fill="#6d28d9">glutamate</text>
+          </g>
+
+          <!-- Postsynaptic spine (bottom, aligned) -->
+          <rect x="180" y="320" width="500" height="160" rx="22" fill="url(#memGrad)" stroke="#dbe3f5"/>
+          <text x="208" y="358" fill="#111827" font-size="22" font-weight="800">Postsynaptic spine</text>
+          <line x1="200" y1="405" x2="660" y2="405" stroke="#111827" stroke-width="5" opacity="0.65"/>
+
+          <!-- Receptors aligned under VGCC -->
+          <g id="amparec">
+            <rect x="410" y="375" width="38" height="62" rx="9" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+            <text x="404" y="365" font-size="14" fill="#64748b">AMPA</text>
+          </g>
+
+          <g id="nmdarec">
+            <rect x="458" y="375" width="38" height="62" rx="9" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+            <text x="452" y="365" font-size="14" fill="#64748b">NMDA</text>
+            <!-- Mg block icon (opacity reflects block strength) -->
+            <circle id="mg" cx="477" cy="406" r="10" fill="#64748b" opacity="0.30"/>
+            <text x="471" y="410" font-size="12" fill="#ffffff" opacity="0.8">Mg</text>
+          </g>
+
+          <!-- Highlight rings -->
+          <circle id="hl_ca" cx="475" cy="165" r="32" fill="none" stroke="#0ea5e9" stroke-width="5" opacity="0.10"/>
+          <circle id="hl_glu" cx="510" cy="265" r="40" fill="none" stroke="#7c3aed" stroke-width="5" opacity="0.08"/>
+	<circle id="hl_ampa" cx="429" cy="406" r="44" fill="none" stroke="#f59e0b" stroke-width="6" opacity="0.0"/>
+	<circle id="hl_nmda" cx="477" cy="406" r="44" fill="none" stroke="#10b981" stroke-width="6" opacity="0.0"/>
+
+          <!-- Labels -->
+          
+        </svg>
+
+        <div class="kv"><span>Postsynaptic voltage (mV)</span><code id="vpostRead">-70</code></div>
+        <div class="kv"><span>Active manipulations</span><code id="drugRead">none</code></div>
+
+        <div class="controls">
+          <div class="control">
+            <label>
+              <span>Postsynaptic holding potential, V<sub>post</sub> (mV)</span>
+              <span class="tiny"><span id="vpostLabel">-70</span> mV</span>
+            </label>
+            <input id="vpost" type="range" min="-90" max="40" value="-70" step="1" />
+            <div class="tiny" style="margin-top:8px;">
+              NMDA current is scaled by Mg²⁺ block (weakened vs prior version) and by driving force (V − E<sub>rev</sub>).
+            </div>
+          </div>
+
+          <div class="control">
+            <label>
+              <span>EAAT clearance (higher = faster clearance)</span>
+              <span class="tiny"><span id="eaatLabel">1.00</span>×</span>
+            </label>
+            <input id="eaatStrength" type="range" min="0.20" max="2.50" value="1.0" step="0.01" />
+            <div class="tiny" style="margin-top:8px;">
+              This changes glutamate timecourse in the cleft.
+            </div>
+          </div>
+
+          <div class="control">
+            <label>
+              <span>Time cursor (ms)</span>
+              <span class="tiny"><span id="tLabel">0.0</span> ms</span>
+            </label>
+            <input id="tCursor" type="range" min="-5" max="10" value="-5.0" step="0.05" />
+            <div class="playbar">
+              <button id="play" class="primary">Play</button>
+              <button id="pause" disabled>Pause</button>
+              <button id="reset">Reset</button>
+              
+            </div>
+          </div>
+
+          <div class="control">
+            <div style="font-weight:800; margin-bottom:8px; font-size:1.02rem;">Pharmacology toggles</div>
+            <div class="pillbar">
+              <div class="pill" id="btnTTX" role="button" tabindex="0" aria-pressed="false">
+                <span class="dot"></span><span>TTX</span>
+              </div>
+              <div class="pill" id="btnCaBlock" role="button" tabindex="0" aria-pressed="false">
+                <span class="dot"></span><span>Ca²⁺ channel blocker</span>
+              </div>
+              <div class="pill" id="btnBoNT" role="button" tabindex="0" aria-pressed="false">
+                <span class="dot"></span><span>BoNT/TeNT</span>
+              </div>
+              <div class="pill" id="btnEAAT" role="button" tabindex="0" aria-pressed="false">
+                <span class="dot"></span><span>EAAT blocker</span>
+              </div>
+              <div class="pill" id="btnAMPAant" role="button" tabindex="0" aria-pressed="false">
+                <span class="dot"></span><span>AMPAR antagonist</span>
+              </div>
+              <div class="pill" id="btnNMDAant" role="button" tabindex="0" aria-pressed="false">
+                <span class="dot"></span><span>NMDAR antagonist</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Right -->
+      <section class="card">
+        <h2>Synaptic Transmission Events:</h2>
+        <div class="sub">
+          AP peak in the presyanptic neuron occurs at 0 ms.
+        </div>
+
+        <div class="plots">
+          <div>
+            <div class="plotTitle"><strong>(1) Presynaptic action potential</strong></div>
+            <canvas id="cAP" width="1120" height="260"></canvas>
+          </div>
+          <div>
+            <div class="plotTitle"><strong>(2) Ca²⁺ current through VGCCs</strong></div>
+            <canvas id="cCa" width="1120" height="260"></canvas>
+          </div>
+          <div>
+            <div class="plotTitle"><strong>(3) Glutamate in the cleft</strong></div>
+            <canvas id="cGlu" width="1120" height="260"></canvas>
+          </div>
+          <div>
+            <div class="plotTitle"><strong>(4) Postsynaptic current</strong></div>
+            <canvas id="cI" width="1120" height="300"></canvas>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section id="pageQuiz" class="hidden">
+    <div class="quizWrap">
+      <section class="card">
+        <h2>Quiz — Mechanism, prediction, and analysis</h2>
+        <div class="sub">
+        </div>
+
+        <!-- Q1 -->
+        <div class="q" data-q="1">
+          <h3>1) You apply a Ca²⁺ channel blocker and the presynaptic AP is still present. Explain why the postsynaptic current disappears. Include all the causal steps through receptor activation.</h3>
+          <textarea placeholder="Answer in 1-2 sentences."></textarea>
+          <button class="check">Check</button>
+          <div class="feedback" hidden></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="q" data-q="2">
+          <h3>2) What is the effect of blocking EAAT transport? </h3>
+          <div class="opt"><input type="radio" name="q2" value="A" /> <div>A. Narrower glutamate transient, shorter AMPA and NMDA currents.</div></div>
+          <div class="opt"><input type="radio" name="q2" value="B" /> <div>B. Prolonged glutamate transient, prolonged AMPA and NMDA currents (especially NMDA tail).</div></div>
+          <div class="opt"><input type="radio" name="q2" value="C" /> <div>C. AP repolarization slows because EAATs remove extracellular K⁺.</div></div>
+          <button class="check">Check</button>
+          <div class="feedback" hidden></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="q" data-q="3">
+          <h3>3) You hold V<sub>post</sub> at −70 mV vs −40 mV. What happens to AMPA vs NMDA currents, and why?</h3>
+          <textarea placeholder="Compare AMPA and NMDA. Include Mg²⁺ block and driving force."></textarea>
+          <button class="check">Check</button>
+          <div class="feedback" hidden></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="q" data-q="4">
+          <h3>4) A student claims: “NMDA current is delayed only because glutamate arrives later.” Is that claim correct? Choose best answer.</h3>
+          <div class="opt"><input type="radio" name="q4" value="A" /> <div>A. Correct — NMDA receptors bind glutamate only after AMPA receptors.</div></div>
+          <div class="opt"><input type="radio" name="q4" value="B" /> <div>B. Incorrect — NMDA kinetics are slower and voltage-dependent (Mg²⁺ block), even with the same glutamate transient.</div></div>
+          <div class="opt"><input type="radio" name="q4" value="C" /> <div>C. Correct — NMDA receptors require presynaptic Ca²⁺ entry to open.</div></div>
+          <button class="check">Check</button>
+          <div class="feedback" hidden></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="q" data-q="5">
+          <h3>5) Design an experiment (in one paragraph) using two pharmacological manipulations to distinguish “release failure” from “postsynaptic receptor block.”</h3>
+          <textarea placeholder="Include: what you apply, what traces you expect to change, and how you interpret."></textarea>
+          <button class="check">Check (rubric)</button>
+          <div class="feedback" hidden></div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="q" data-q="6">
+          <h3>6) BoNT/TeNT is applied. Which traces remain and which vanish?</h3>
+          <div class="opt"><input type="radio" name="q6" value="A" /> <div>A. AP and Ca²⁺ current remain; glutamate and postsynaptic currents vanish.</div></div>
+          <div class="opt"><input type="radio" name="q6" value="B" /> <div>B. Only NMDA current vanishes; AMPA current remains.</div></div>
+          <div class="opt"><input type="radio" name="q6" value="C" /> <div>C. All traces vanish because BoNT blocks Na⁺ channels.</div></div>
+          <button class="check">Check</button>
+          <div class="feedback" hidden></div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="q" data-q="7">
+          <h3>7) If you see a normal glutamate transient but no AMPA current at any holding potential, what is the most parsimonious explanation?</h3>
+          <div class="opt"><input type="radio" name="q7" value="A" /> <div>A. AMPAR antagonist or AMPAR nonfunctional/absent (postsynaptic).</div></div>
+          <div class="opt"><input type="radio" name="q7" value="B" /> <div>B. TTX is present.</div></div>
+          <div class="opt"><input type="radio" name="q7" value="C" /> <div>C. EAATs are blocked.</div></div>
+          <button class="check">Check</button>
+          <div class="feedback" hidden></div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="q" data-q="8">
+          <h3>8) At V<sub>post</sub>=+20 mV, the simulator shows outward glutamatergic currents. Explain why the sign flips, and what remains voltage-dependent.</h3>
+          <textarea placeholder="Discuss driving force relative to Erev and Mg²⁺ block for NMDA."></textarea>
+          <button class="check">Check (rubric)</button>
+          <div class="feedback" hidden></div>
+        </div>
+
+      </section>
+
+      <aside class="rubric">
+        <h2>Helpful hints</h2>
+        <div class="sub" style="margin:0 0 6px;">Your answer is marked “complete” if it includes the key mechanistic elements below.</div>
+        <ul>
+          <li><b>Causal chain:</b> AP → VGCC opening → Ca²⁺ entry → vesicle fusion → glutamate transient → receptor activation.</li>
+          <li><b>Release dependence:</b> transmitter release requires presynaptic Ca²⁺ and SNARE-mediated fusion.</li>
+          <li><b>Driving force:</b> I = G·(V−Erev), with Erev ~ 0 mV for glutamatergic currents.</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  // ---------------------------
+  // Time base (zoomed window)
+  // ---------------------------
+  const dt = 0.05;          // ms (finer for nicer AP/AHP)
+  const tMin = -5.0;
+  const tMax = 10.0;
+  const N = Math.round((tMax - tMin) / dt) + 1;
+  const t = new Array(N);
+  for (let i=0;i<N;i++) t[i] = tMin + i*dt;
+
+  // ---------------------------
+  // State
+  // ---------------------------
+  const state = {
+    vpost_mV: -70,
+    eaatStrength: 1.0,    // higher = faster clearance (shorter glutamate)
+    cursor_ms: -5.0,
+    playing: false,
+
+    ttx: false,
+    caBlock: false,
+    botox: false,
+    eaatBlock: false,
+    ampaAnt: false,
+    nmdaAnt: false
+  };
+
+  // ---------------------------
+  // Helpers
+  // ---------------------------
+  const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
+  const exp = Math.exp;
+
+  function gaussian(x, mu, sigma){
+    const z = (x - mu) / sigma;
+    return exp(-0.5*z*z);
+  }
+  function sigmoid(x, x0, k){
+    return 1/(1+exp(-(x-x0)/k));
+  }
+
+  // Double exponential
+  function doubleExp(t, t0, tauRise, tauDecay){
+    const u = t - t0;
+    if (u <= 0) return 0;
+    return exp(-u / tauDecay) - exp(-u / tauRise);
+  }
+
+  // Mg block (WEAKENED): set parameters so at ~-40 mV there's appreciable unblocked fraction
+  // We keep a standard functional form but reduce the effective block strength.
+  function mgBlockWeak(v_mV){
+    // Smaller prefactor => weaker block; slightly smaller slope => less steep dependence.
+    // Returns fraction unblocked (0..1).
+    return 1.0 / (1.0 + 0.12 * exp(-0.055 * v_mV));
+  }
+
+  // Normalize array to max=1 (if nonzero)
+  function normalizeToMax(arr){
+    const m = Math.max(...arr.map(x=>Math.abs(x)));
+    if (m < 1e-9) return arr.map(_=>0);
+    return arr.map(x=>x/m);
+  }
+
+  // ---------------------------
+  // Parameters
+  // ---------------------------
+  const params = {
+    // Presynaptic AP at t=0 with AHP:
+    vRest: -70,
+    vPeak: 30,
+    vAHP: -82,        // afterhyperpolarization trough
+    tPeak: 0.0,
+
+    // We construct AP with rise and fall sigmoids + add an AHP bump.
+    riseK: 0.12,
+    fallK: 0.18,
+    tRiseMid: -0.15,
+    tFallMid: 0.55,
+
+    // AHP timing (Gaussian trough)
+    tAHP: 2.2,
+    ahpSigma: 0.8,
+
+    // Ca current: during repolarization (slightly after peak)
+    tCa: 0.9,
+    caSigma: 0.35,
+    iCaPeak_nA: -1.0,
+
+    // Release timing
+    tRel: 1.6,
+
+    // Glutamate kinetics
+    gluRise: 0.12,
+    gluDecayBase: 0.5,  // ms, will be divided by eaatStrength (stronger clearance => faster decay)
+
+    // Synaptic conductances (nS) — tuned to land in ~ -100 pA range at -70 mV
+    gAMPA_nS: 1.15,
+    gNMDA_nS: 5,
+    Erev_mV: 0.0,
+
+    // Receptor kinetics
+    ampaRise: 0.15,
+    ampaDecay: 0.6,
+    nmdaRise: 1.5,
+    nmdaDecay: 18.0
+  };
+
+  // ---------------------------
+  // Trace generation (fixed: EAAT slider truly changes glutamate and downstream)
+  // ---------------------------
+  function computeTraces(){
+    const apGate = state.ttx ? 0 : 1;
+    const caGate = state.caBlock ? 0 : 1;
+    const releaseGate = state.botox ? 0 : 1;
+
+    // If EAAT blocker on: enforce low clearance multiplier
+    const eaatStrength = state.eaatBlock ? 0.25 : state.eaatStrength;
+    const gluDecay = params.gluDecayBase / clamp(eaatStrength, 0.10, 5.0);
+
+    const ampaGate = state.ampaAnt ? 0 : 1;
+    const nmdaGate = state.nmdaAnt ? 0 : 1;
+
+    // (1) AP with AHP
+    const v = new Array(N);
+    for (let i=0;i<N;i++){
+      const ti = t[i];
+      const up = sigmoid(ti, params.tRiseMid, params.riseK);
+      const down = sigmoid(ti, params.tFallMid, params.fallK);
+      const spike01 = clamp(up - down, 0, 1); // 0..1
+      const spike = params.vRest + apGate * spike01 * (params.vPeak - params.vRest);
+
+      // AHP trough (only after spike); create a dip below rest
+      const ahp = gaussian(ti, params.tAHP, params.ahpSigma);
+      const ahpAmt = apGate * ahp * (params.vRest - params.vAHP); // positive magnitude
+      v[i] = spike - ahpAmt;
+    }
+
+    // (2) Ca current: inward during repolarization; depends on AP and Ca block
+    const iCa = new Array(N);
+    for (let i=0;i<N;i++){
+      const ti = t[i];
+      const shape = gaussian(ti, params.tCa, params.caSigma);
+      iCa[i] = apGate * caGate * params.iCaPeak_nA * shape;
+    }
+
+    // Release drive from iCa magnitude (nonlinear)
+    const relDrive = new Array(N).fill(0);
+    for (let i=0;i<N;i++){
+      const caMag = Math.max(0, -iCa[i]);
+      relDrive[i] = releaseGate * Math.pow(caMag, 1.6);
+    }
+    // Use max drive to scale release probability 0..1
+    const relMax = Math.max(...relDrive);
+    const rel01 = relMax > 1e-9 ? relDrive.map(x=>x/relMax) : relDrive.map(_=>0);
+
+    // (3) Glutamate transient: depends on release; EAAT changes decay
+    const glu = new Array(N);
+    // compute base kernel
+    const kernel = new Array(N);
+    for (let i=0;i<N;i++){
+      kernel[i] = doubleExp(t[i], params.tRel, params.gluRise, gluDecay);
+    }
+    const kMax = Math.max(...kernel);
+    const kernel01 = (kMax > 1e-9) ? kernel.map(x=>x/kMax) : kernel.map(_=>0);
+
+    // glutamate amplitude set by release (peak near 1 if release present)
+    for (let i=0;i<N;i++){
+      // multiply release scalar (use value near release time; approximate with rel01 at same index)
+      glu[i] = kernel01[i] * (rel01[i] > 0 ? 1 : 0);
+    }
+    // To ensure release has the right amplitude even though rel01 is peaked near tCa,
+    // also gate by overall presence of any release.
+    const hasRelease = relMax > 1e-9 ? 1 : 0;
+    for (let i=0;i<N;i++) glu[i] *= hasRelease;
+
+    // (4) Postsynaptic currents depend on glutamate, Vpost, Mg block (NMDA), and antagonists
+    const Vpost = state.vpost_mV;
+    const B = mgBlockWeak(Vpost);
+
+    // conductance envelopes (normalized)
+    const envA = new Array(N);
+    const envN = new Array(N);
+    for (let i=0;i<N;i++){
+      envA[i] = doubleExp(t[i], params.tRel, params.ampaRise, params.ampaDecay);
+      envN[i] = doubleExp(t[i], params.tRel, params.nmdaRise, params.nmdaDecay);
+    }
+    const envA01 = normalizeToMax(envA).map(Math.abs);
+    const envN01 = normalizeToMax(envN).map(Math.abs);
+
+    const iAMPA = new Array(N);
+    const iNMDA = new Array(N);
+    const iTot = new Array(N);
+
+    const drive = (Vpost - params.Erev_mV); // mV
+    for (let i=0;i<N;i++){
+      const gA = ampaGate * params.gAMPA_nS * envA01[i] * glu[i];
+      const gN = nmdaGate * params.gNMDA_nS * envN01[i] * glu[i] * B;
+
+      // nS*mV = pA
+      iAMPA[i] = gA * drive;
+      iNMDA[i] = gN * drive;
+      iTot[i]  = iAMPA[i] + iNMDA[i];
+    }
+
+    return {t, v, iCa, glu, iAMPA, iNMDA, iTot, B, eaatStrength};
+  }
+
+  // ---------------------------
+  // Canvas plotting
+  // ---------------------------
+  function drawAxes(ctx, W, H, xMin, xMax, yMin, yMax, xLabel, yLabel){
+    ctx.clearRect(0,0,W,H);
+
+    const mL=64, mR=20, mT=18, mB=42;
+    const x0=mL, y0=H-mB, x1=W-mR, y1=mT;
+
+    ctx.strokeStyle="#111827";
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(x0,y1); ctx.lineTo(x0,y0); ctx.lineTo(x1,y0);
+    ctx.stroke();
+
+    // ticks & grid
+    ctx.font = "13px " + getComputedStyle(document.documentElement).getPropertyValue('--mono');
+    ctx.fillStyle="#374151";
+
+    // x ticks
+    ctx.textAlign="center"; ctx.textBaseline="top";
+    const xTicks=15;
+    for (let k=0;k<=xTicks;k++){
+      const xv = xMin + (xMax-xMin)*k/xTicks;
+      const x = x0 + (x1-x0)*k/xTicks;
+
+      ctx.strokeStyle="#e5e7eb";
+      ctx.beginPath(); ctx.moveTo(x,y1); ctx.lineTo(x,y0); ctx.stroke();
+
+      ctx.fillText(xv.toFixed(0), x, y0+8);
+    }
+    ctx.fillText(xLabel, (x0+x1)/2, H-22);
+
+    // y ticks
+    ctx.textAlign="right"; ctx.textBaseline="middle";
+    const yTicks=4;
+    for (let k=0;k<=yTicks;k++){
+      const yv = yMin + (yMax-yMin)*k/yTicks;
+      const y = y0 - (y0-y1)*k/yTicks;
+
+      ctx.strokeStyle="#f3f4f6";
+      ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+
+      const fmt = (Math.abs(yMax-yMin) <= 5) ? yv.toFixed(2) : yv.toFixed(0);
+      ctx.fillStyle="#374151";
+      ctx.fillText(fmt, x0-10, y);
+    }
+
+    // y label
+    ctx.save();
+    ctx.translate(18, (y0+y1)/2);
+    ctx.rotate(-Math.PI/2);
+    ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillStyle="#374151";
+    ctx.fillText(yLabel, 0, 0);
+    ctx.restore();
+
+    return {mL,mR,mT,mB,x0,x1,y0,y1,xMin,xMax,yMin,yMax};
+  }
+
+  function plotLine(ctx, box, xs, ys, stroke, width, cursor_ms, progressive=true){
+    const {x0,x1,y0,y1,xMin,xMax,yMin,yMax} = box;
+    const sx = x => x0 + (x1-x0)*(x-xMin)/(xMax-xMin);
+    const sy = y => y0 - (y0-y1)*(y-yMin)/(yMax-yMin);
+
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    let started=false;
+
+    for (let i=0;i<xs.length;i++){
+      if (progressive && xs[i] > cursor_ms) break;
+      const X = sx(xs[i]);
+      const Y = sy(ys[i]);
+      if (!started){ ctx.moveTo(X,Y); started=true; }
+      else ctx.lineTo(X,Y);
+    }
+    if (started) ctx.stroke();
+  }
+
+  function plotCursor(ctx, box, cursor_ms){
+    const {x0,x1,y0,y1,xMin,xMax} = box;
+    const x = x0 + (x1-x0)*(cursor_ms-xMin)/(xMax-xMin);
+    ctx.strokeStyle="rgba(47,74,138,.60)";
+    ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(x,y1); ctx.lineTo(x,y0); ctx.stroke();
+  }
+
+  function plotZeroLine(ctx, box, yZero){
+    const {x0,x1,y0,y1,yMin,yMax} = box;
+    if (yZero<yMin || yZero>yMax) return;
+    const y = y0 - (y0-y1)*(yZero-yMin)/(yMax-yMin);
+    ctx.setLineDash([7,6]);
+    ctx.strokeStyle="rgba(17,24,39,.35)";
+    ctx.lineWidth=1.8;
+    ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function plotLegend(ctx, items){
+    ctx.font = "13px " + getComputedStyle(document.documentElement).getPropertyValue('--mono');
+    ctx.textAlign="left"; ctx.textBaseline="top";
+    let x=74, y=10;
+    for (const it of items){
+      ctx.fillStyle=it.color;
+      ctx.fillRect(x, y+4, 14, 4);
+      ctx.fillStyle="#374151";
+      ctx.fillText(it.name, x+20, y);
+      x += 190;
+    }
+  }
+
+  // ---------------------------
+  // Schematic highlighting
+  // ---------------------------
+  function updateSchematic(tr){
+    const cursor = state.cursor_ms;
+    const idx = clamp(Math.round((cursor - tMin)/dt), 0, N-1);
+
+    const v = tr.v[idx];
+    const caMag = Math.max(0, -tr.iCa[idx]);
+    const glu = tr.glu[idx];
+    const iPost = Math.max(0, -tr.iTot[idx]); // inward magnitude
+
+    const apOp = clamp((v - params.vRest) / (params.vPeak - params.vRest), 0, 1);
+    const caOp = clamp(caMag / 1.0, 0, 1);
+    const gluOp = clamp(glu / 1.0, 0, 1);
+    const postOp = clamp(iPost / 100.0, 0, 1); // scaled to new y range
+
+	// Circle AMPA + NMDA receptors when glutamate is present (proxy for activation)
+	const ampaHL = document.getElementById("hl_ampa");
+	const nmdaHL = document.getElementById("hl_nmda");
+	if (ampaHL) ampaHL.setAttribute("opacity", (0.02 + 0.90*gluOp).toFixed(3));
+	if (nmdaHL) nmdaHL.setAttribute("opacity", (0.02 + 0.90*gluOp).toFixed(3));
+
+    const apText = document.getElementById("apText");
+	if (apText){
+	  // Make it pop in when the AP is present
+	  apText.setAttribute("opacity", (0.05 + 0.95*apOp).toFixed(3));
+	}
+    document.getElementById("hl_ca").setAttribute("opacity", (0.08 + 0.60*caOp).toFixed(3));
+    document.getElementById("hl_glu").setAttribute("opacity", (0.06 + 0.65*gluOp).toFixed(3));
+    
+    document.getElementById("glutDots").setAttribute("opacity", (0.08 + 0.75*gluOp).toFixed(3));
+
+    const fus = 0.12 + 0.70*gluOp;
+    document.getElementById("fusionSite").querySelectorAll("circle,path").forEach(el=>{
+      el.setAttribute("opacity", fus.toFixed(3));
+    });
+
+    // Mg icon: more opaque when blocked (1-B)
+    const mg = document.getElementById("mg");
+    mg.setAttribute("opacity", (0.18 + 0.65*(1-tr.B)).toFixed(3));
+  }
+
+  // ---------------------------
+  // Render
+  // ---------------------------
+  function render(){
+    const tr = computeTraces();
+
+    // Readouts
+    document.getElementById("vpostLabel").textContent = state.vpost_mV.toFixed(0);
+    document.getElementById("vpostRead").textContent = state.vpost_mV.toFixed(0);
+    document.getElementById("eaatLabel").textContent = tr.eaatStrength.toFixed(2);
+    document.getElementById("tLabel").textContent = state.cursor_ms.toFixed(2);
+
+    const active=[];
+    if (state.ttx) active.push("TTX");
+    if (state.caBlock) active.push("CaBlock");
+    if (state.botox) active.push("BoNT/TeNT");
+    if (state.eaatBlock) active.push("EAAT block");
+    if (state.ampaAnt) active.push("AMPA ant");
+    if (state.nmdaAnt) active.push("NMDA ant");
+    document.getElementById("drugRead").textContent = active.length ? active.join(", ") : "none";
+
+    // Plots: fixed x range
+    const xMin = tMin, xMax = tMax;
+
+    // AP plot
+    {
+      const c = document.getElementById("cAP");
+      const ctx = c.getContext("2d");
+      const box = drawAxes(ctx, c.width, c.height, xMin, xMax, -90, 40, "Time (ms)", "Vpre (mV)");
+      plotZeroLine(ctx, box, -55);
+      plotLine(ctx, box, tr.t, tr.v, "#ef4444", 3.0, state.cursor_ms, true);
+      plotCursor(ctx, box, state.cursor_ms);
+      ctx.font = "13px " + getComputedStyle(document.documentElement).getPropertyValue('--mono');
+      ctx.fillStyle="rgba(17,24,39,.65)";
+      ctx.textAlign="left"; ctx.textBaseline="bottom";
+          }
+
+    // Ca plot
+    {
+      const c = document.getElementById("cCa");
+      const ctx = c.getContext("2d");
+      const box = drawAxes(ctx, c.width, c.height, xMin, xMax, -1.2, 0.2, "Time (ms)", "I_Ca (nA)");
+      plotZeroLine(ctx, box, 0);
+      plotLine(ctx, box, tr.t, tr.iCa, "#0ea5e9", 3.0, state.cursor_ms, true);
+      plotCursor(ctx, box, state.cursor_ms);
+      ctx.font = "13px " + getComputedStyle(document.documentElement).getPropertyValue('--mono');
+      ctx.fillStyle="rgba(17,24,39,.65)";
+      ctx.textAlign="left"; ctx.textBaseline="bottom";
+     
+    }
+
+    // Glu plot (EAAT slider now truly changes decay)
+    {
+      const c = document.getElementById("cGlu");
+      const ctx = c.getContext("2d");
+      const box = drawAxes(ctx, c.width, c.height, xMin, xMax, 0, 1.05, "Time (ms)", "[Glu] (rel. µM)");
+      plotLine(ctx, box, tr.t, tr.glu, "#7c3aed", 3.0, state.cursor_ms, true);
+      plotCursor(ctx, box, state.cursor_ms);
+      ctx.font = "13px " + getComputedStyle(document.documentElement).getPropertyValue('--mono');
+      ctx.fillStyle="rgba(17,24,39,.65)";
+      ctx.textAlign="left"; ctx.textBaseline="bottom";
+          }
+
+    // Postsynaptic current plot: fixed y range (10 to -100 pA)
+    {
+      const c = document.getElementById("cI");
+      const ctx = c.getContext("2d");
+      const box = drawAxes(ctx, c.width, c.height, xMin, xMax, -100, 10, "Time (ms)", "I_post (pA)");
+      plotZeroLine(ctx, box, 0);
+
+      plotLine(ctx, box, tr.t, tr.iAMPA, "#f59e0b", 2.8, state.cursor_ms, true);
+      plotLine(ctx, box, tr.t, tr.iNMDA, "#10b981", 2.8, state.cursor_ms, true);
+      plotLine(ctx, box, tr.t, tr.iTot,  "#111827", 3.4, state.cursor_ms, true);
+
+      plotLegend(ctx, [
+        {name:"AMPA", color:"#f59e0b"},
+        {name:"NMDA", color:"#10b981"},
+        {name:"Total", color:"#111827"}
+      ]);
+
+      plotCursor(ctx, box, state.cursor_ms);
+
+      ctx.font = "13px " + getComputedStyle(document.documentElement).getPropertyValue('--mono');
+      ctx.fillStyle="rgba(17,24,39,.70)";
+      ctx.textAlign="left"; ctx.textBaseline="bottom";
+          }
+
+    updateSchematic(tr);
+  }
+
+  // ---------------------------
+  // UI wiring (fixed slider coupling)
+  // ---------------------------
+  const vpostEl = document.getElementById("vpost");
+  const eaatEl = document.getElementById("eaatStrength");
+  const cursorEl = document.getElementById("tCursor");
+
+  vpostEl.addEventListener("input", () => {
+    state.vpost_mV = parseFloat(vpostEl.value);
+    render();
+  });
+
+  eaatEl.addEventListener("input", () => {
+    state.eaatStrength = parseFloat(eaatEl.value);
+    // If user adjusts slider manually, keep EAAT blocker toggle as-is; slider still changes kinetics.
+    render();
+  });
+
+  cursorEl.addEventListener("input", () => {
+    state.cursor_ms = parseFloat(cursorEl.value);
+    render();
+  });
+
+  function togglePill(el, key){
+    state[key] = !state[key];
+    el.setAttribute("aria-pressed", state[key] ? "true" : "false");
+
+    if (key === "eaatBlock"){
+      // set a teaching-friendly low clearance (slow removal) while still allowing manual slider changes
+      if (state.eaatBlock){
+        state.eaatStrength = 0.25;
+        eaatEl.value = state.eaatStrength.toString();
+      } else {
+        state.eaatStrength = 1.0;
+        eaatEl.value = state.eaatStrength.toString();
+      }
+    }
+    render();
+  }
+
+  [
+    ["btnTTX","ttx"],
+    ["btnCaBlock","caBlock"],
+    ["btnBoNT","botox"],
+    ["btnEAAT","eaatBlock"],
+    ["btnAMPAant","ampaAnt"],
+    ["btnNMDAant","nmdaAnt"]
+  ].forEach(([id,key])=>{
+    const el = document.getElementById(id);
+    const handler = ()=>togglePill(el,key);
+    el.addEventListener("click", handler);
+    el.addEventListener("keydown", (e)=>{
+      if (e.key==="Enter"||e.key===" "){e.preventDefault(); handler();}
+    });
+  });
+
+  // ---------------------------
+  // Slower animation + progressive plotting
+  // ---------------------------
+  const btnPlay = document.getElementById("play");
+  const btnPause = document.getElementById("pause");
+  const btnReset = document.getElementById("reset");
+
+  let raf=null;
+  let lastTS=null;
+
+  function step(ts){
+    if (!state.playing) return;
+    if (lastTS==null) lastTS=ts;
+    const dReal = ts - lastTS;
+    lastTS = ts;
+
+    // Slower: 1 ms model time per 30 ms real time
+    const speed = 1/250;
+    state.cursor_ms += dReal * speed;
+
+    if (state.cursor_ms > tMax){
+      state.cursor_ms = tMax;
+      state.playing = false;
+      btnPlay.disabled = false;
+      btnPause.disabled = true;
+      lastTS = null;
+      render();
+      return;
+    }
+
+    cursorEl.value = state.cursor_ms.toFixed(2);
+    render();
+    raf = requestAnimationFrame(step);
+  }
+
+  btnPlay.addEventListener("click", ()=>{
+    if (state.cursor_ms >= tMax) state.cursor_ms = tMin;
+    state.playing = true;
+    btnPlay.disabled = true;
+    btnPause.disabled = false;
+    lastTS = null;
+    raf = requestAnimationFrame(step);
+  });
+
+  btnPause.addEventListener("click", ()=>{
+    state.playing = false;
+    btnPlay.disabled = false;
+    btnPause.disabled = true;
+    if (raf) cancelAnimationFrame(raf);
+    raf=null; lastTS=null;
+  });
+
+  btnReset.addEventListener("click", ()=>{
+    state.playing = false;
+    btnPlay.disabled = false;
+    btnPause.disabled = true;
+    if (raf) cancelAnimationFrame(raf);
+    raf=null; lastTS=null;
+
+    state.cursor_ms = tMin;
+    cursorEl.value = String(tMin);
+    render();
+  });
+
+  // ---------------------------
+  // Tabs (Page 1 / Page 2)
+  // ---------------------------
+  const tabSim = document.getElementById("tabSim");
+  const tabQuiz = document.getElementById("tabQuiz");
+  const pageSim = document.getElementById("pageSim");
+  const pageQuiz = document.getElementById("pageQuiz");
+
+  function show(which){
+    const sim = (which==="sim");
+    tabSim.setAttribute("aria-selected", sim ? "true" : "false");
+    tabQuiz.setAttribute("aria-selected", sim ? "false" : "true");
+    pageSim.classList.toggle("hidden", !sim);
+    pageQuiz.classList.toggle("hidden", sim);
+  }
+
+  tabSim.addEventListener("click", ()=>show("sim"));
+  tabQuiz.addEventListener("click", ()=>show("quiz"));
+  [tabSim, tabQuiz].forEach(tab=>{
+    tab.addEventListener("keydown",(e)=>{
+      if (e.key==="Enter"||e.key===" "){
+        e.preventDefault();
+        show(tab.id==="tabSim" ? "sim" : "quiz");
+      }
+    });
+  });
+
+  // ---------------------------
+  // Quiz checking (rubric-style + MC)
+  // ---------------------------
+  function setFeedback(box, ok, msg){
+    const fb = box.querySelector(".feedback");
+    fb.hidden = false;
+    fb.classList.remove("good","bad");
+    fb.classList.add(ok ? "good" : "bad");
+    fb.textContent = msg;
+  }
+
+  // Simple rubric scorer: check for keywords / concepts (teaching aid, not grading authority)
+  function rubricScore(text, requiredPhrases){
+    const t = text.toLowerCase();
+    let hit = 0;
+    const misses=[];
+    for (const r of requiredPhrases){
+      const ok = r.any.some(k => t.includes(k));
+      if (ok) hit++;
+      else misses.push(r.label);
+    }
+    return {hit, total: requiredPhrases.length, misses};
+  }
+
+  const mcAnswers = {2:"B",4:"B",6:"A",7:"A"};
+
+  document.querySelectorAll("#pageQuiz .q").forEach(qBox=>{
+    qBox.querySelector(".check").addEventListener("click", ()=>{
+      const qNum = parseInt(qBox.getAttribute("data-q"),10);
+
+      // MC?
+      const radios = qBox.querySelectorAll('input[type="radio"]');
+      if (radios.length){
+        const sel = qBox.querySelector('input[type="radio"]:checked');
+        if (!sel){
+          setFeedback(qBox,false,"Select an answer choice first.");
+          return;
+        }
+        const ok = sel.value === mcAnswers[qNum];
+        const explain = {
+          2: "EAAT block slows clearance → glutamate persists → prolonged receptor activation (NMDA tail especially).",
+          4: "NMDA delay reflects slower channel kinetics AND voltage dependence via Mg²⁺ block, even with the same glutamate transient.",
+          6: "BoNT/TeNT blocks SNARE-dependent fusion: AP and Ca²⁺ entry can remain, but glutamate release and postsynaptic currents vanish.",
+          7: "Normal glutamate + absent AMPA at all V strongly suggests AMPAR block/absence rather than presynaptic failure."
+        }[qNum] || "";
+        setFeedback(qBox, ok, (ok ? "Correct. " : "Not quite. ") + explain);
+        return;
+      }
+
+      // Short answer
+      const ta = qBox.querySelector("textarea");
+      const txt = (ta?.value || "").trim();
+      if (!txt){
+        setFeedback(qBox,false,"Write a short answer first.");
+        return;
+      }
+
+      if (qNum === 1){
+        const req = [
+          {label:"AP can persist but Ca²⁺ entry is blocked", any:["ap", "action potential", "depolar"]},
+          {label:"Ca²⁺ is required for vesicle fusion/release", any:["ca", "calcium", "fusion", "vesicle", "release"]},
+          {label:"No glutamate → no receptor activation → no postsynaptic current", any:["glut", "transmitter", "receptor", "ampa", "nmda", "postsynaptic current"]}
+        ];
+        const sc = rubricScore(txt, req);
+        const ok = sc.hit >= 3;
+        setFeedback(qBox, ok,
+          `Rubric: ${sc.hit}/${sc.total} key elements found.\n` +
+          (sc.misses.length ? `Missing: ${sc.misses.join("; ")}\n` : "") +
+          "Ideal logic: AP depolarizes terminal → VGCCs would open, but blocker prevents Ca²⁺ influx → SNARE-triggered fusion fails → glutamate transient collapses → AMPA/NMDA currents disappear."
+        );
+      } else if (qNum === 3){
+        const req = [
+          {label:"Driving force (V−Erev) changes magnitude/sign", any:["driving force", "v -", "v−", "erev", "0 mv"]},
+          {label:"NMDA Mg²⁺ block relieved by depolarization", any:["mg", "magnesium", "block", "reliev", "depolar"]},
+          {label:"AMPA is primarily ligand-gated (weak voltage dependence here)", any:["ampa", "ligand", "not voltage", "primarily"]}
+        ];
+        const sc = rubricScore(txt, req);
+        const ok = sc.hit >= 2;
+        setFeedback(qBox, ok,
+          `Rubric: ${sc.hit}/${sc.total} key elements found.\n` +
+          (sc.misses.length ? `Missing: ${sc.misses.join("; ")}\n` : "") +
+          "Expected comparison: AMPA changes mostly with driving force (inward at negative V, smaller near 0). NMDA changes with driving force AND Mg²⁺ unblock; depolarizing to −40 mV increases NMDA relative to −70 mV despite reduced driving force, because Mg²⁺ block is relieved."
+        );
+      } else if (qNum === 5){
+        const req = [
+          {label:"One manipulation targeting presynaptic release machinery", any:["bot", "tet", "snare", "fusion", "release"]},
+          {label:"One manipulation targeting postsynaptic receptors", any:["ampa antagonist", "nmda antagonist", "receptor antagonist", "cnqx", "apv", "nbqx"]},
+          {label:"Predicted pattern of traces (which remain vs vanish)", any:["trace", "remain", "vanish", "glu", "calcium", "current"]},
+          {label:"Interpretation that distinguishes presynaptic vs postsynaptic locus", any:["presyn", "postsyn", "locus", "interpret"]}
+        ];
+        const sc = rubricScore(txt, req);
+        const ok = sc.hit >= 3;
+        setFeedback(qBox, ok,
+          `Rubric: ${sc.hit}/${sc.total} key elements found.\n` +
+          (sc.misses.length ? `Missing: ${sc.misses.join("; ")}\n` : "") +
+          "Strong answer example: apply BoNT/TeNT (AP+Ca remain; glutamate+postsyn currents gone) vs apply AMPAR/NMDAR antagonists (AP+Ca+glutamate remain; postsyn currents selectively reduced). Compare which step is disrupted."
+        );
+      } else if (qNum === 8){
+        const req = [
+          {label:"Sign flips due to driving force relative to Erev≈0 mV", any:["driving force", "erev", "0 mv", "sign", "outward"]},
+          {label:"What remains voltage-dependent: NMDA Mg²⁺ block", any:["nmda", "mg", "magnesium", "block", "unblock"]},
+          {label:"Conductance time course still driven by glutamate transient", any:["glut", "transient", "conductance", "g(t)"]}
+        ];
+        const sc = rubricScore(txt, req);
+        const ok = sc.hit >= 2;
+        setFeedback(qBox, ok,
+          `Rubric: ${sc.hit}/${sc.total} key elements found.\n` +
+          (sc.misses.length ? `Missing: ${sc.misses.join("; ")}\n` : "") +
+          "Core explanation: When Vpost > Erev, (V−Erev) becomes positive → current becomes outward in this sign convention. NMDA still shows additional voltage dependence via Mg²⁺ unblock."
+        );
+      }
+    });
+  });
+
+  // ---------------------------
+  // Initialize
+  // ---------------------------
+  render();
+})();
+</script>
+</body>
+</html>
